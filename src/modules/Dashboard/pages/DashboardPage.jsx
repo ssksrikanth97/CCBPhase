@@ -32,10 +32,11 @@ const DashboardPage = () => {
       textTransform: 'uppercase', letterSpacing: '0.5px',
     },
     mainGrid: {
-      display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20, marginBottom: 28,
+      display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20, marginBottom: 28,
+      alignItems: 'stretch',
     },
     rightColumn: {
-      display: 'flex', flexDirection: 'column', gap: 20,
+      display: 'flex', flexDirection: 'column', gap: 16,
     },
   };
 

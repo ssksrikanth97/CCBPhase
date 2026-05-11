@@ -2,7 +2,7 @@ import React from 'react';
 import { useThemeContext } from '../../../../styles/ThemeContext';
 import { rgba } from '../../../../styles/utils';
 
-const ProductCard = ({ product }) => {
+const BundleCard = ({ bundle }) => {
   const { colors, fonts, shadows } = useThemeContext();
 
   const getChurnStyle = (color) => {
@@ -18,7 +18,7 @@ const ProductCard = ({ product }) => {
     }
   };
 
-  const isPositiveGrowth = product.growth?.startsWith('+');
+  const isPositiveGrowth = bundle.growth?.startsWith('+');
 
   const styles = {
     card: {
@@ -27,20 +27,34 @@ const ProductCard = ({ product }) => {
       cursor: 'pointer', transition: 'all 0.2s',
     },
     header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 },
-    productName: { fontFamily: fonts.heading, fontSize: 'var(--text-md)', fontWeight: 600, color: colors.textPrimary, lineHeight: 1.3, flex: 1, paddingRight: 8 },
-    churnBadge: { fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 600, padding: '3px 10px', borderRadius: 4, whiteSpace: 'nowrap', ...getChurnStyle(product.churnColor) },
-    metaRow: { display: 'flex', gap: 8, marginBottom: 14, alignItems: 'center', flexWrap: 'wrap' },
-    metaChip: {
-      fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 500,
-      padding: '2px 8px', borderRadius: 4,
-      backgroundColor: rgba(colors.accentPrimary, 0.08), color: colors.accentPrimary,
+    bundleName: { fontFamily: fonts.heading, fontSize: 'var(--text-md)', fontWeight: 600, color: colors.textPrimary, lineHeight: 1.3, flex: 1, paddingRight: 8 },
+    churnBadge: { fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 600, padding: '3px 10px', borderRadius: 4, whiteSpace: 'nowrap', ...getChurnStyle(bundle.churnColor) },
+    typeRow: { display: 'flex', gap: 8, marginBottom: 10, alignItems: 'center' },
+    typeChip: {
+      fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 600,
+      padding: '3px 10px', borderRadius: 4,
+      backgroundColor: rgba(colors.accentPrimary, 0.1), color: colors.accentPrimary,
+      border: `1px solid ${rgba(colors.accentPrimary, 0.2)}`,
     },
-    serviceChip: {
-      fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 500,
-      padding: '2px 8px', borderRadius: 4,
-      backgroundColor: rgba(colors.accentSecondary, 0.1), color: colors.accentSecondaryDark,
+    discountChip: {
+      fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 600,
+      padding: '3px 10px', borderRadius: 4,
+      backgroundColor: rgba(colors.accentSecondary, 0.12), color: colors.accentSecondaryDark,
+      border: `1px solid ${rgba(colors.accentSecondary, 0.25)}`,
     },
-    metricsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 24px', marginBottom: 14 },
+    productsSection: {
+      marginBottom: 14, padding: '10px 12px', borderRadius: 8,
+      backgroundColor: rgba(colors.bgPrimary, 0.5), border: `1px solid ${colors.borderLight}`,
+    },
+    productsLabel: { fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted, marginBottom: 6, fontWeight: 500 },
+    productsList: { display: 'flex', flexWrap: 'wrap', gap: 6 },
+    productItem: {
+      fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 500,
+      padding: '2px 8px', borderRadius: 12,
+      backgroundColor: colors.bgSurface, color: colors.textSecondary,
+      border: `1px solid ${colors.borderLight}`,
+    },
+    metricsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: 14 },
     metricLabel: { fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted, marginBottom: 2 },
     metricValue: { fontFamily: fonts.heading, fontSize: 'var(--text-base)', fontWeight: 700, color: colors.textPrimary },
     growthValue: { fontFamily: fonts.heading, fontSize: 'var(--text-base)', fontWeight: 700, color: isPositiveGrowth ? colors.accentSecondaryDark : colors.accentPrimary },
@@ -52,68 +66,73 @@ const ProductCard = ({ product }) => {
     footer: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: 10, borderTop: `1px solid ${colors.borderLight}` },
     revenueLabel: { fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted, marginBottom: 2 },
     revenueValue: { fontFamily: fonts.heading, fontSize: 'var(--text-lg)', fontWeight: 700, color: colors.textPrimary },
-    priceLabel: { fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted, marginBottom: 2, textAlign: 'right' },
-    priceValue: { fontFamily: fonts.heading, fontSize: 'var(--text-base)', fontWeight: 600, color: colors.textSecondary, textAlign: 'right' },
+    savingsLabel: { fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted, marginBottom: 2, textAlign: 'right' },
+    savingsValue: { fontFamily: fonts.heading, fontSize: 'var(--text-base)', fontWeight: 600, color: colors.accentSecondaryDark, textAlign: 'right' },
   };
 
   return (
-    <article style={styles.card} role="listitem" tabIndex={0} aria-label={product.name}>
+    <article style={styles.card} role="listitem" tabIndex={0} aria-label={bundle.name}>
       <div style={styles.header}>
-        <span style={styles.productName}>{product.name}</span>
-        <span style={styles.churnBadge}>{product.churnLevel}</span>
+        <span style={styles.bundleName}>{bundle.name}</span>
+        <span style={styles.churnBadge}>{bundle.churnLevel}</span>
       </div>
 
-      {/* Product-specific meta: service type + subscription model */}
-      <div style={styles.metaRow}>
-        <span style={styles.serviceChip}>{product.serviceType}</span>
-        <span style={styles.metaChip}>{product.subscriptionModel}</span>
-        {product.region && <span style={styles.metaChip}>{product.region}</span>}
+      {/* Bundle type + discount */}
+      <div style={styles.typeRow}>
+        <span style={styles.typeChip}>{bundle.bundleType} Bundle</span>
+        <span style={styles.discountChip}>{bundle.discount} Off</span>
       </div>
 
-      {/* Key product metrics */}
+      {/* Included products */}
+      <div style={styles.productsSection}>
+        <div style={styles.productsLabel}>Included Products ({bundle.products})</div>
+        <div style={styles.productsList}>
+          {bundle.includedProducts?.map((p, i) => (
+            <span key={i} style={styles.productItem}>{p}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Key metrics: 3-column */}
       <div style={styles.metricsGrid}>
         <div>
           <div style={styles.metricLabel}>Subscribers</div>
-          <div style={styles.metricValue}>{product.subscribers}</div>
+          <div style={styles.metricValue}>{bundle.subscribers}</div>
         </div>
         <div>
           <div style={styles.metricLabel}>Growth</div>
-          <div style={styles.growthValue}>{product.growth}</div>
+          <div style={styles.growthValue}>{bundle.growth}</div>
         </div>
         <div>
-          <div style={styles.metricLabel}>ARPU</div>
-          <div style={styles.metricValue}>{product.arpu}</div>
-        </div>
-        <div>
-          <div style={styles.metricLabel}>Engagement</div>
-          <div style={styles.metricValue}>{product.engagement}</div>
+          <div style={styles.metricLabel}>Retention</div>
+          <div style={styles.metricValue}>{bundle.retention}</div>
         </div>
       </div>
 
       {/* AI Insight */}
-      {product.aiInsight && (
+      {bundle.aiInsight && (
         <div style={styles.insightBox}>
           <div style={styles.insightHeader}>
             <div style={styles.insightIcon}>✦</div>
             <span style={styles.insightLabel}>AI Insight</span>
           </div>
-          <div style={styles.insightText}>{product.aiInsight}</div>
+          <div style={styles.insightText}>{bundle.aiInsight}</div>
         </div>
       )}
 
-      {/* Footer: Revenue + Price */}
+      {/* Footer: Revenue + Savings */}
       <div style={styles.footer}>
         <div>
           <div style={styles.revenueLabel}>Monthly Revenue</div>
-          <div style={styles.revenueValue}>{product.monthlyRevenue}</div>
+          <div style={styles.revenueValue}>{bundle.monthlyRevenue}</div>
         </div>
         <div>
-          <div style={styles.priceLabel}>Price</div>
-          <div style={styles.priceValue}>{product.price}/mo</div>
+          <div style={styles.savingsLabel}>Avg Savings</div>
+          <div style={styles.savingsValue}>{bundle.avgSavings}/user</div>
         </div>
       </div>
     </article>
   );
 };
 
-export default ProductCard;
+export default BundleCard;

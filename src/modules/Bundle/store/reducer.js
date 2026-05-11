@@ -1,27 +1,24 @@
 import {
-  FETCH_PRODUCTS_REQUEST,
-  FETCH_PRODUCTS_SUCCESS,
-  FETCH_PRODUCTS_FAILURE,
-  SET_ACTIVE_FILTER,
-  REMOVE_FILTER,
-  CREATE_PRODUCT_REQUEST,
-  CREATE_PRODUCT_SUCCESS,
-  CREATE_PRODUCT_FAILURE,
-  UPDATE_PRODUCT_FORM,
-  RESET_PRODUCT_FORM,
+  FETCH_BUNDLES_REQUEST,
+  FETCH_BUNDLES_SUCCESS,
+  FETCH_BUNDLES_FAILURE,
+  SET_BUNDLE_FILTER,
+  REMOVE_BUNDLE_FILTER,
+  CREATE_BUNDLE_REQUEST,
+  CREATE_BUNDLE_SUCCESS,
+  CREATE_BUNDLE_FAILURE,
+  UPDATE_BUNDLE_FORM,
+  RESET_BUNDLE_FORM,
 } from './actionTypes';
 
 const initialFormState = {
-  name: '',
-  title: 'New Product title',
-  category: 'Video',
-  sku: '#MTEP3222',
-  subscriptionAs: 'Recurring',
-  serviceType: 'Streaming services',
-  productType: '',
-  proRate: '',
+  title: 'New Bundle',
+  category: 'Entertainment',
+  sku: '#BDL0001',
+  bundleType: 'Fixed',
   validityEndDate: '12/12/2026',
-  unitOfMeasure: '',
+  discount: '',
+  products: '',
   priceType: '',
   price: '',
 };
@@ -30,48 +27,48 @@ const initialState = {
   items: [],
   loading: false,
   error: null,
-  activeFilters: ['Onetime'],
+  activeFilters: [],
   form: { ...initialFormState },
   creating: false,
   createError: null,
 };
 
-const productReducer = (state = initialState, action) => {
+const bundleReducer = (state = initialState, action) => {
   switch (action.type) {
-    case FETCH_PRODUCTS_REQUEST:
+    case FETCH_BUNDLES_REQUEST:
       return { ...state, loading: true, error: null };
 
-    case FETCH_PRODUCTS_SUCCESS:
+    case FETCH_BUNDLES_SUCCESS:
       return { ...state, loading: false, items: action.payload };
 
-    case FETCH_PRODUCTS_FAILURE:
+    case FETCH_BUNDLES_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
-    case SET_ACTIVE_FILTER:
+    case SET_BUNDLE_FILTER:
       return {
         ...state,
         activeFilters: [...state.activeFilters, action.payload],
       };
 
-    case REMOVE_FILTER:
+    case REMOVE_BUNDLE_FILTER:
       return {
         ...state,
         activeFilters: state.activeFilters.filter((f) => f !== action.payload),
       };
 
-    case UPDATE_PRODUCT_FORM:
+    case UPDATE_BUNDLE_FORM:
       return {
         ...state,
         form: { ...state.form, [action.payload.field]: action.payload.value },
       };
 
-    case RESET_PRODUCT_FORM:
+    case RESET_BUNDLE_FORM:
       return { ...state, form: { ...initialFormState }, createError: null };
 
-    case CREATE_PRODUCT_REQUEST:
+    case CREATE_BUNDLE_REQUEST:
       return { ...state, creating: true, createError: null };
 
-    case CREATE_PRODUCT_SUCCESS:
+    case CREATE_BUNDLE_SUCCESS:
       return {
         ...state,
         creating: false,
@@ -79,7 +76,7 @@ const productReducer = (state = initialState, action) => {
         form: { ...initialFormState },
       };
 
-    case CREATE_PRODUCT_FAILURE:
+    case CREATE_BUNDLE_FAILURE:
       return { ...state, creating: false, createError: action.payload };
 
     default:
@@ -87,4 +84,4 @@ const productReducer = (state = initialState, action) => {
   }
 };
 
-export default productReducer;
+export default bundleReducer;

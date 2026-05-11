@@ -9,7 +9,9 @@ const insights = [
     confidence: 94,
     description: 'OTT streaming shows 18.5% growth. Increase marketing budget by 15% to capture additional 45K subscribers worth $2.8M annually.',
     impact: 'High Impact',
+    impactColor: '#10b981',
     action: 'Review Strategy',
+    timeAgo: '2h ago',
   },
   {
     icon: '⚠️',
@@ -17,7 +19,9 @@ const insights = [
     confidence: 89,
     description: 'Live Concert Streaming Pass shows early churn signals. 12% of subscribers reduced usage by 40% in the last 2 weeks.',
     impact: 'Medium Impact',
+    impactColor: '#f59e0b',
     action: 'View Details',
+    timeAgo: '4h ago',
   },
 ];
 
@@ -26,57 +30,95 @@ const AIInsights = () => {
 
   const styles = {
     card: {
-      backgroundColor: colors.bgSurface, borderRadius: 14, padding: '20px',
-      border: `1px solid ${colors.borderLight}`, boxShadow: shadows.sm,
+      backgroundColor: colors.bgSurface, borderRadius: 16, padding: '22px',
+      border: `1.5px solid ${colors.borderLight}`, boxShadow: shadows.sm,
     },
-    header: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 },
-    headerIcon: { fontSize: 'var(--text-xl)' },
-    title: { fontFamily: fonts.heading, fontSize: 'var(--text-lg)', fontWeight: 700, color: colors.textPrimary },
-    subtitle: { fontFamily: fonts.body, fontSize: 'var(--text-sm)', color: colors.textMuted, marginBottom: 16 },
+    header: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
+    titleRow: { display: 'flex', alignItems: 'center', gap: 10 },
+    titleIcon: {
+      width: 32, height: 32, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: `linear-gradient(135deg, ${rgba(colors.accentPrimary, 0.15)}, ${rgba(colors.accentSecondary, 0.15)})`,
+      fontSize: 'var(--text-md)',
+    },
+    title: { fontFamily: fonts.heading, fontSize: 'var(--text-md)', fontWeight: 700, color: colors.textPrimary },
+    liveIndicator: {
+      display: 'flex', alignItems: 'center', gap: 5,
+      fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 600, color: '#10b981',
+    },
+    liveDot: {
+      width: 6, height: 6, borderRadius: '50%', backgroundColor: '#10b981',
+      animation: 'pulse 2s infinite',
+    },
+    subtitle: { fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted, marginBottom: 16, marginLeft: 42 },
     insightCard: {
-      backgroundColor: rgba(colors.borderLight, 0.5), borderRadius: 10, padding: '14px',
-      marginBottom: 12, border: `1px solid ${colors.borderLight}`,
+      borderRadius: 12, padding: '16px',
+      marginBottom: 10, border: `1px solid ${colors.borderLight}`,
+      backgroundColor: rgba(colors.bgPrimary, 0.4),
+      transition: 'all 0.2s',
     },
-    insightHeader: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 },
-    insightIcon: (color) => ({
-      width: 28, height: 28, borderRadius: 8,
-      backgroundColor: rgba(color, 0.12), display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: 'var(--text-base)',
-    }),
-    insightTitle: { fontFamily: fonts.body, fontSize: 'var(--text-base)', fontWeight: 600, color: colors.textPrimary },
-    insightConfidence: { marginLeft: 'auto', fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 600, color: colors.textMuted },
-    insightDesc: { fontFamily: fonts.body, fontSize: 'var(--text-sm)', color: colors.textMuted, lineHeight: 1.5, marginBottom: 10 },
+    insightHeader: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 },
+    insightIcon: {
+      width: 30, height: 30, borderRadius: 8, flexShrink: 0,
+      backgroundColor: rgba(colors.accentPrimary, 0.1), display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: 'var(--text-sm)',
+    },
+    insightTitleGroup: { flex: 1, minWidth: 0 },
+    insightTitle: { fontFamily: fonts.body, fontSize: 'var(--text-sm)', fontWeight: 600, color: colors.textPrimary },
+    insightTime: { fontFamily: fonts.body, fontSize: '10px', color: colors.textMuted, marginTop: 1 },
+    confidenceBar: { display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 },
+    confidenceLabel: { fontFamily: fonts.body, fontSize: '10px', color: colors.textMuted },
+    confidenceTrack: { width: 40, height: 4, borderRadius: 2, backgroundColor: rgba(colors.accentPrimary, 0.12), overflow: 'hidden' },
+    confidenceFill: (pct) => ({ width: `${pct}%`, height: '100%', borderRadius: 2, background: `linear-gradient(90deg, ${colors.accentPrimary}, ${colors.accentSecondary})` }),
+    insightDesc: { fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted, lineHeight: 1.5, marginBottom: 12 },
     insightFooter: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
-    impactBadge: {
-      fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 600,
+    impactBadge: (color) => ({
+      fontFamily: fonts.body, fontSize: '10px', fontWeight: 700,
       padding: '3px 8px', borderRadius: 6,
-      backgroundColor: rgba(colors.accentSecondary, 0.12), color: colors.accentSecondaryDark,
-    },
-    actionLink: {
-      fontFamily: fonts.body, fontSize: 'var(--text-sm)', fontWeight: 500,
-      color: colors.textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+      backgroundColor: rgba(color, 0.1), color: color,
+      border: `1px solid ${rgba(color, 0.2)}`,
+    }),
+    actionBtn: {
+      fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 600,
+      color: colors.accentPrimary, cursor: 'pointer',
+      display: 'flex', alignItems: 'center', gap: 4,
+      padding: '4px 10px', borderRadius: 6, border: 'none', backgroundColor: rgba(colors.accentPrimary, 0.08),
+      transition: 'all 0.2s',
     },
   };
 
   return (
     <div style={styles.card}>
       <div style={styles.header}>
-        <span style={styles.headerIcon}>🧠</span>
-        <span style={styles.title}>AI-Powered Insights</span>
+        <div style={styles.titleRow}>
+          <div style={styles.titleIcon}>🧠</div>
+          <span style={styles.title}>AI-Powered Insights</span>
+        </div>
+        <div style={styles.liveIndicator}>
+          <span style={styles.liveDot} />
+          Live
+        </div>
       </div>
       <div style={styles.subtitle}>Real-time intelligence from our AI engine</div>
 
       {insights.map((insight, i) => (
         <div key={i} style={styles.insightCard}>
           <div style={styles.insightHeader}>
-            <div style={styles.insightIcon(colors.accentPrimary)}>{insight.icon}</div>
-            <span style={styles.insightTitle}>{insight.title}</span>
-            <span style={styles.insightConfidence}>{insight.confidence}%</span>
+            <div style={styles.insightIcon}>{insight.icon}</div>
+            <div style={styles.insightTitleGroup}>
+              <div style={styles.insightTitle}>{insight.title}</div>
+              <div style={styles.insightTime}>{insight.timeAgo}</div>
+            </div>
+            <div style={styles.confidenceBar}>
+              <span style={styles.confidenceLabel}>{insight.confidence}%</span>
+              <div style={styles.confidenceTrack}>
+                <div style={styles.confidenceFill(insight.confidence)} />
+              </div>
+            </div>
           </div>
           <div style={styles.insightDesc}>{insight.description}</div>
           <div style={styles.insightFooter}>
-            <span style={styles.impactBadge}>{insight.impact}</span>
-            <span style={styles.actionLink}>{insight.action} →</span>
+            <span style={styles.impactBadge(insight.impactColor)}>{insight.impact}</span>
+            <button style={styles.actionBtn}>{insight.action} →</button>
           </div>
         </div>
       ))}

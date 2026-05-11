@@ -1,77 +1,75 @@
 import {
-  FETCH_PRODUCTS_REQUEST,
-  FETCH_PRODUCTS_SUCCESS,
-  FETCH_PRODUCTS_FAILURE,
-  SET_ACTIVE_FILTER,
-  REMOVE_FILTER,
-  CREATE_PRODUCT_REQUEST,
-  CREATE_PRODUCT_SUCCESS,
-  CREATE_PRODUCT_FAILURE,
-  UPDATE_PRODUCT_FORM,
-  RESET_PRODUCT_FORM,
+  FETCH_PROMOTIONS_REQUEST,
+  FETCH_PROMOTIONS_SUCCESS,
+  FETCH_PROMOTIONS_FAILURE,
+  SET_PROMOTION_FILTER,
+  REMOVE_PROMOTION_FILTER,
+  CREATE_PROMOTION_REQUEST,
+  CREATE_PROMOTION_SUCCESS,
+  CREATE_PROMOTION_FAILURE,
+  UPDATE_PROMOTION_FORM,
+  RESET_PROMOTION_FORM,
 } from './actionTypes';
 
 const initialFormState = {
-  name: '',
-  title: 'New Product title',
-  category: 'Video',
-  sku: '#MTEP3222',
-  subscriptionAs: 'Recurring',
-  serviceType: 'Streaming services',
-  productType: '',
-  proRate: '',
+  title: 'New Promotion',
+  type: 'Discount',
+  code: '',
+  discount: '',
+  validityStartDate: '',
   validityEndDate: '12/12/2026',
-  unitOfMeasure: '',
-  priceType: '',
-  price: '',
+  targetAudience: 'All Subscribers',
+  minPurchase: '',
+  maxUses: '',
+  applicableTo: '',
 };
 
 const initialState = {
   items: [],
   loading: false,
   error: null,
-  activeFilters: ['Onetime'],
+  activeFilters: [],
   form: { ...initialFormState },
   creating: false,
   createError: null,
 };
 
-const productReducer = (state = initialState, action) => {
+const promotionReducer = (state = initialState, action) => {
   switch (action.type) {
-    case FETCH_PRODUCTS_REQUEST:
+    case FETCH_PROMOTIONS_REQUEST:
       return { ...state, loading: true, error: null };
 
-    case FETCH_PRODUCTS_SUCCESS:
+    case FETCH_PROMOTIONS_SUCCESS:
       return { ...state, loading: false, items: action.payload };
 
-    case FETCH_PRODUCTS_FAILURE:
+    case FETCH_PROMOTIONS_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
-    case SET_ACTIVE_FILTER:
+    case SET_PROMOTION_FILTER:
       return {
         ...state,
         activeFilters: [...state.activeFilters, action.payload],
       };
 
-    case REMOVE_FILTER:
+    case REMOVE_PROMOTION_FILTER:
       return {
         ...state,
         activeFilters: state.activeFilters.filter((f) => f !== action.payload),
       };
 
-    case UPDATE_PRODUCT_FORM:
+    case UPDATE_PROMOTION_FORM:
       return {
         ...state,
         form: { ...state.form, [action.payload.field]: action.payload.value },
       };
 
-    case RESET_PRODUCT_FORM:
+    case RESET_PROMOTION_FORM:
       return { ...state, form: { ...initialFormState }, createError: null };
 
-    case CREATE_PRODUCT_REQUEST:
+    case CREATE_PROMOTION_REQUEST:
       return { ...state, creating: true, createError: null };
 
-    case CREATE_PRODUCT_SUCCESS:
+    case CREATE_PROMOTION_SUCCESS:
       return {
         ...state,
         creating: false,
@@ -79,7 +77,7 @@ const productReducer = (state = initialState, action) => {
         form: { ...initialFormState },
       };
 
-    case CREATE_PRODUCT_FAILURE:
+    case CREATE_PROMOTION_FAILURE:
       return { ...state, creating: false, createError: action.payload };
 
     default:
@@ -87,4 +85,4 @@ const productReducer = (state = initialState, action) => {
   }
 };
 
-export default productReducer;
+export default promotionReducer;

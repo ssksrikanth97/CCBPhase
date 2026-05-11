@@ -4,6 +4,10 @@ import Layout from './components/Layout/Layout';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import ProductListPage from './modules/Product/pages/ProductListPage';
 import ProductCreatePage from './modules/Product/pages/ProductCreatePage';
+import BundleListPage from './modules/Bundle/pages/BundleListPage';
+import BundleCreatePage from './modules/Bundle/pages/BundleCreatePage';
+import PromotionListPage from './modules/Promotion/pages/PromotionListPage';
+import PromotionCreatePage from './modules/Promotion/pages/PromotionCreatePage';
 import LoginPage from './modules/Auth/pages/LoginPage';
 import InvitePage from './modules/Auth/pages/InvitePage';
 import DashboardPage from './modules/Dashboard/pages/DashboardPage';
@@ -30,8 +34,10 @@ const AppRoutes = () => {
       {/* Catalogue */}
       <PrivateRoute exact path="/catalogue/products/create" component={() => (<Layout><ProductCreatePage /></Layout>)} />
       <PrivateRoute path="/catalogue/products" component={() => (<Layout><ProductListPage /></Layout>)} />
-      <PrivateRoute path="/catalogue/bundles" component={() => (<Layout><PlaceholderPage title="Bundles" description="Create and manage product bundles" /></Layout>)} />
-      <PrivateRoute path="/catalogue/promotions" component={() => (<Layout><PlaceholderPage title="Promotions" description="Create and manage promotional offers" /></Layout>)} />
+      <PrivateRoute exact path="/catalogue/bundles/create" component={() => (<Layout><BundleCreatePage /></Layout>)} />
+      <PrivateRoute path="/catalogue/bundles" component={() => (<Layout><BundleListPage /></Layout>)} />
+      <PrivateRoute exact path="/catalogue/promotions/create" component={() => (<Layout><PromotionCreatePage /></Layout>)} />
+      <PrivateRoute path="/catalogue/promotions" component={() => (<Layout><PromotionListPage /></Layout>)} />
       <PrivateRoute path="/catalogue/rules" component={() => (<Layout><PlaceholderPage title="Catalogue Rules" description="Define pricing and eligibility rules" /></Layout>)} />
 
       {/* Customers */}

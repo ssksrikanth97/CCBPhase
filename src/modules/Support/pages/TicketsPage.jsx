@@ -3,75 +3,274 @@ import { useHistory } from 'react-router-dom';
 import { useThemeContext } from '../../../styles/ThemeContext';
 import { useBU } from '../../BusinessUnit/store/buContext';
 import { rgba } from '../../../styles/utils';
+import TicketVoiceInputBar from '../components/TicketVoiceInputBar/TicketVoiceInputBar';
+import TicketFilterBar from '../components/TicketFilterBar/TicketFilterBar';
 
 const mockTickets = [
-  { id: 'RVT435', title: 'Playback not working – stuck on black screen', status: 'In-Progress', priority: 'High', category: 'Service Ticket', domain: 'Video', business: 'OTT-POC', created: '12/09/2025 8:10:00', sla: '40m', assignee: 'Support Team', customer: 'Srikanth', phone: '+91 838389333', email: 'srikanth@gmail.com' },
-  { id: 'RVT436', title: 'Unable to login after password reset', status: 'Open', priority: 'Critical', category: 'Technical', domain: 'Authentication', business: 'OTT-POC', created: '12/09/2025 9:22:00', sla: '15m', assignee: 'Tech Team', customer: 'Sarah Johnson', phone: '+1 555-123-4567', email: 'sarah.j@email.com' },
-  { id: 'RVT437', title: 'Billing discrepancy – double charged', status: 'Open', priority: 'High', category: 'Billing', domain: 'Payments', business: 'OTT-POC', created: '12/09/2025 10:05:00', sla: '1h', assignee: 'Billing Team', customer: 'Michael Chen', phone: '+1 555-987-6543', email: 'michael.c@corp.com' },
-  { id: 'RVT438', title: 'Content not available in region', status: 'Resolved', priority: 'Medium', category: 'Content', domain: 'Streaming', business: 'OTT-POC', created: '11/09/2025 14:30:00', sla: '2h', assignee: 'Content Team', customer: 'Emma Wilson', phone: '+44 20 7946-0958', email: 'emma.w@gmail.com' },
-  { id: 'RVT439', title: 'Subscription upgrade not reflecting', status: 'In-Progress', priority: 'Medium', category: 'Account', domain: 'Subscription', business: 'OTT-POC', created: '11/09/2025 16:45:00', sla: '3h', assignee: 'Account Team', customer: 'Alex Rivera', phone: '+1 555-246-8135', email: 'alex.r@email.com' },
-  { id: 'RVT440', title: 'App crashes on launch – iOS 18', status: 'Open', priority: 'Critical', category: 'Technical', domain: 'Mobile App', business: 'OTT-POC', created: '12/09/2025 11:00:00', sla: '30m', assignee: 'Mobile Team', customer: 'David Park', phone: '+82 10-1234-5678', email: 'david.p@email.com' },
+  { id: 'RVT435-10', title: 'Playback not working, stuck on black screen', status: 'In-Progress', priority: 'Critical', category: 'Trouble Ticket', domain: 'Video', business: 'OTT-POC', created: '05/03/2025', sla: '45m', assignee: 'Abishek', customer: 'Robert', customerId: '232323228383833', channel: 'Email' },
+  { id: 'RVT435-10', title: 'Playback not working, stuck on black screen', status: 'In-Progress', priority: 'High', category: 'Trouble Ticket', domain: 'Authentication', business: 'OTT-POC', created: '05/03/2025', sla: '02:45m', assignee: 'Abishek', customer: 'Srikanth', customerId: '232323227371711', channel: 'CCB' },
+  { id: 'RVT435-10', title: 'Playback not working, stuck on black screen', status: 'In-Progress', priority: 'High', category: 'Trouble Ticket', domain: 'Streaming', business: 'OTT-POC', created: '05/03/2025', sla: '02:45m', assignee: 'Abishek', customer: 'Williamson', customerId: '232323227371352', channel: 'Email' },
+  { id: 'RVT435-10', title: 'Playback not working, stuck on black screen', status: 'Open', priority: 'Medium', category: 'Trouble Ticket', domain: 'Payments', business: 'OTT-POC', created: '05/03/2025', sla: '02:45m', assignee: '--', customer: 'Ameer Khan', customerId: '232323227370980', channel: 'Email' },
+  { id: 'RVT435-10', title: 'Playback not working, stuck on black screen', status: 'Open', priority: 'Medium', category: 'Trouble Ticket', domain: 'Subscription', business: 'OTT-POC', created: '05/03/2025', sla: '02:45m', assignee: 'Raghu', customer: 'Rukhmini', customerId: '232323227376464', channel: 'Email' },
+  { id: 'RVT435-10', title: 'Playback not working, stuck on black screen', status: 'Open', priority: 'Medium', category: 'Trouble Ticket', domain: 'Mobile App', business: 'OTT-POC', created: '05/03/2025', sla: '02:45m', assignee: 'Abishek', customer: 'Sardhar', customerId: '232323227376521', channel: 'CCB' },
+  { id: 'RVT435-10', title: 'Playback not working, stuck on black screen', status: 'Open', priority: 'Low', category: 'Trouble Ticket', domain: 'Video', business: 'OTT-POC', created: '05/03/2025', sla: '24:00m', assignee: '--', customer: 'Michel', customerId: '232323227371711', channel: 'CCB' },
 ];
 
-const priorityColors = { Critical: '#ef4444', High: '#f59e0b', Medium: '#3b82f6', Low: '#6b7280' };
-const statusColors = { Open: '#ef4444', 'In-Progress': '#f59e0b', Resolved: '#10b981', Closed: '#6b7280' };
+const priorityColors = { Critical: '#ef4444', High: '#f97316', Medium: '#f59e0b', Low: '#6b7280' };
+const priorityBg = { Critical: '#fef2f2', High: '#fff7ed', Medium: '#fffbeb', Low: '#f9fafb' };
+const priorityArrow = { Critical: '↓', High: '↑', Medium: '→', Low: '↓' };
+const statusColors = { Open: '#10b981', 'In-Progress': '#f59e0b', Resolved: '#3b82f6', Closed: '#6b7280' };
+const statusBg = { Open: '#ecfdf5', 'In-Progress': '#fffbeb', Resolved: '#eff6ff', Closed: '#f9fafb' };
+const statusDot = { Open: '#10b981', 'In-Progress': '#f59e0b', Resolved: '#3b82f6', Closed: '#6b7280' };
 
 const TicketsPage = () => {
   const { colors, fonts } = useThemeContext();
   const { activeBU } = useBU();
   const history = useHistory();
-  const [filter, setFilter] = useState('all');
+  const [activeFilters, setActiveFilters] = useState([]);
+  const [selectedTickets, setSelectedTickets] = useState([]);
 
   useEffect(() => { document.title = 'EV Phase - Tickets'; }, []);
 
-  const filtered = filter === 'all' ? mockTickets : mockTickets.filter((t) => t.status.toLowerCase().replace('-', '') === filter);
+  const handleAddFilter = (filter) => {
+    setActiveFilters((prev) => [...prev, filter]);
+  };
+
+  const handleRemoveFilter = (filter) => {
+    setActiveFilters((prev) => prev.filter((f) => f !== filter));
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedTickets.length === filtered.length) {
+      setSelectedTickets([]);
+    } else {
+      setSelectedTickets(filtered.map((_, i) => i));
+    }
+  };
+
+  const toggleSelect = (index) => {
+    setSelectedTickets((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
+  const filtered = activeFilters.length === 0
+    ? mockTickets
+    : mockTickets.filter((ticket) => {
+        return activeFilters.some((f) => {
+          const fl = f.toLowerCase();
+          if (ticket.status.toLowerCase() === fl) return true;
+          if (ticket.priority.toLowerCase() === fl) return true;
+          if (ticket.category.toLowerCase() === fl) return true;
+          return false;
+        });
+      });
+
+  const styles = {
+    table: {
+      width: '100%', borderCollapse: 'separate', borderSpacing: '0 0',
+      fontFamily: fonts.body, fontSize: 'var(--text-sm)',
+    },
+    thead: {
+      position: 'sticky', top: 0, zIndex: 2,
+    },
+    th: {
+      padding: '12px 14px', textAlign: 'left', fontWeight: 600,
+      fontSize: 'var(--text-xs)', color: colors.textMuted,
+      borderBottom: `1px solid ${colors.borderLight}`,
+      backgroundColor: colors.bgPrimary, whiteSpace: 'nowrap',
+    },
+    thSortable: {
+      cursor: 'pointer', userSelect: 'none',
+    },
+    tr: {
+      cursor: 'pointer', transition: 'background-color 0.15s',
+      borderBottom: `1px solid ${colors.borderLight}`,
+    },
+    td: {
+      padding: '14px 14px', verticalAlign: 'middle',
+      borderBottom: `1px solid ${colors.borderLight}`,
+    },
+    checkbox: {
+      width: 16, height: 16, borderRadius: 3, cursor: 'pointer',
+      accentColor: colors.accentPrimary,
+    },
+    ticketInfo: {
+      display: 'flex', flexDirection: 'column', gap: 2,
+    },
+    ticketIdRow: {
+      display: 'flex', gap: 8, alignItems: 'center',
+    },
+    ticketId: {
+      fontFamily: fonts.body, fontSize: 'var(--text-sm)', fontWeight: 600,
+      color: colors.accentPrimary,
+    },
+    ticketDate: {
+      fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted,
+    },
+    ticketTitle: {
+      fontFamily: fonts.body, fontSize: 'var(--text-sm)', color: colors.textSecondary,
+      lineHeight: 1.4,
+    },
+    customerName: {
+      fontFamily: fonts.body, fontSize: 'var(--text-sm)', fontWeight: 600,
+      color: colors.textPrimary,
+    },
+    category: {
+      fontFamily: fonts.body, fontSize: 'var(--text-sm)', color: colors.textSecondary,
+    },
+    priorityBadge: (priority) => ({
+      display: 'inline-flex', alignItems: 'center', gap: 4,
+      padding: '4px 10px', borderRadius: 6, fontSize: 'var(--text-xs)', fontWeight: 600,
+      backgroundColor: priorityBg[priority] || '#f9fafb',
+      color: priorityColors[priority] || '#6b7280',
+      border: `1px solid ${rgba(priorityColors[priority] || '#6b7280', 0.2)}`,
+      whiteSpace: 'nowrap',
+    }),
+    customerId: {
+      fontFamily: 'monospace', fontSize: 'var(--text-xs)', fontWeight: 500,
+      color: colors.accentPrimary,
+    },
+    statusBadge: (status) => ({
+      display: 'inline-flex', alignItems: 'center', gap: 5,
+      padding: '4px 10px', borderRadius: 6, fontSize: 'var(--text-xs)', fontWeight: 600,
+      backgroundColor: statusBg[status] || '#f9fafb',
+      color: statusColors[status] || '#6b7280',
+      border: `1px solid ${rgba(statusColors[status] || '#6b7280', 0.2)}`,
+      whiteSpace: 'nowrap',
+    }),
+    statusDot: (status) => ({
+      width: 6, height: 6, borderRadius: '50%',
+      backgroundColor: statusDot[status] || '#6b7280',
+    }),
+    assignee: {
+      fontFamily: fonts.body, fontSize: 'var(--text-sm)', color: colors.textPrimary,
+    },
+    channel: {
+      fontFamily: fonts.body, fontSize: 'var(--text-sm)', color: colors.textSecondary,
+    },
+    sla: {
+      display: 'flex', alignItems: 'center', gap: 4,
+      fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 600,
+      whiteSpace: 'nowrap',
+    },
+    slaWarning: { color: '#ef4444' },
+    slaOk: { color: colors.textMuted },
+  };
+
+  const isSlaWarning = (sla) => {
+    const num = parseInt(sla);
+    return num <= 45;
+  };
 
   return (
     <div style={{ width: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <h1 className="page-title">Tickets</h1>
-        <button style={{ padding: '8px 18px', borderRadius: 'var(--radius-md)', background: 'var(--button-gradient)', color: '#fff', border: 'none', fontFamily: fonts.body, fontSize: 'var(--text-base)', fontWeight:'var(--weight-bold)', cursor: 'pointer' }}>New Ticket</button>
+        <button style={{ padding: '8px 18px', borderRadius: 'var(--radius-md)', background: 'var(--button-gradient)', color: '#fff', border: 'none', fontFamily: fonts.body, fontSize: 'var(--text-base)', fontWeight: 'var(--weight-bold)', cursor: 'pointer' }}>New Ticket</button>
       </div>
       <p className="page-subtitle">Support tickets and issue tracking — {activeBU.name}</p>
 
-      {/* Filters */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {['all', 'open', 'inprogress', 'resolved'].map((f) => (
-          <button key={f} onClick={() => setFilter(f)} style={{ padding: '6px 14px', borderRadius: 'var(--radius-pill)', border: filter === f ? 'none' : `1px solid ${colors.borderLight}`, background: filter === f ? 'var(--button-gradient)' : 'transparent', color: filter === f ? '#fff' : colors.textMuted, fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 500, cursor: 'pointer', textTransform: 'capitalize' }}>
-            {f === 'inprogress' ? 'In Progress' : f}
-          </button>
-        ))}
-      </div>
+      {/* AI Chat Input */}
+      <TicketVoiceInputBar />
 
-      {/* Ticket list */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {filtered.map((ticket) => (
-          <div key={ticket.id} onClick={() => history.push(`/support/tickets/${ticket.id}`)} style={{ backgroundColor: colors.bgSurface, border: `1px solid ${colors.borderLight}`, borderRadius: 'var(--radius-md)', padding: '16px 20px', cursor: 'pointer', transition: 'all 0.2s', borderLeft: `4px solid ${priorityColors[ticket.priority]}` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: fonts.heading, fontSize: 'var(--text-md)', fontWeight: 600, color: colors.textPrimary, marginBottom: 4 }}>{ticket.title}</div>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.accentPrimary }}>#{ticket.id}</span>
-                  <span style={{ fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted }}>•</span>
-                  <span style={{ fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted }}>{ticket.customer}</span>
-                  <span style={{ fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted }}>•</span>
-                  <span style={{ fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted }}>{ticket.category}</span>
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-                <span style={{ fontSize: 'var(--text-xs)', padding: '3px 10px', borderRadius: 12, backgroundColor: rgba(statusColors[ticket.status], 0.1), color: statusColors[ticket.status], fontFamily: fonts.body, fontWeight: 600 }}>{ticket.status}</span>
-                <span style={{ fontSize: 'var(--text-xs)', padding: '3px 10px', borderRadius: 12, backgroundColor: rgba(priorityColors[ticket.priority], 0.1), color: priorityColors[ticket.priority], fontFamily: fonts.body, fontWeight: 600 }}>{ticket.priority}</span>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: 16, fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted }}>
-              <span>📅 {ticket.created}</span>
-              <span>⏱ SLA: {ticket.sla}</span>
-              <span>👤 {ticket.assignee}</span>
-              <span>🏢 {ticket.domain}</span>
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Filter Chips */}
+      <TicketFilterBar
+        activeFilters={activeFilters}
+        onRemoveFilter={handleRemoveFilter}
+        onAddFilter={handleAddFilter}
+      />
+
+      {/* Ticket Table */}
+      {filtered.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '40px 0', color: colors.textSecondary, fontFamily: fonts.body }}>
+          No tickets match the selected filters
+        </div>
+      ) : (
+        <div style={{ overflowX: 'auto', borderRadius: 10, border: `1px solid ${colors.borderLight}`, backgroundColor: colors.bgSurface }}>
+          <table style={styles.table}>
+            <thead style={styles.thead}>
+              <tr>
+                <th style={{ ...styles.th, width: 40 }}>
+                  <input
+                    type="checkbox"
+                    style={styles.checkbox}
+                    checked={selectedTickets.length === filtered.length && filtered.length > 0}
+                    onChange={toggleSelectAll}
+                    aria-label="Select all tickets"
+                  />
+                </th>
+                <th style={styles.th}>Ticket ID, Created On, Title &amp; Customer Name</th>
+                <th style={styles.th}>Category</th>
+                <th style={{ ...styles.th, ...styles.thSortable }}>Priority ↕</th>
+                <th style={styles.th}>CP Customer ID</th>
+                <th style={{ ...styles.th, ...styles.thSortable }}>Status ↕</th>
+                <th style={{ ...styles.th, ...styles.thSortable }}>Assigned User</th>
+                <th style={{ ...styles.th, ...styles.thSortable }}>Channel ↕</th>
+                <th style={{ ...styles.th, ...styles.thSortable }}>SLA ↕</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((ticket, index) => (
+                <tr
+                  key={index}
+                  style={styles.tr}
+                  onClick={() => history.push(`/support/tickets/${ticket.id}`)}
+                >
+                  <td style={styles.td} onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      style={styles.checkbox}
+                      checked={selectedTickets.includes(index)}
+                      onChange={() => toggleSelect(index)}
+                      aria-label={`Select ticket ${ticket.id}`}
+                    />
+                  </td>
+                  <td style={styles.td}>
+                    <div style={styles.ticketInfo}>
+                      <div style={styles.ticketIdRow}>
+                        <span style={styles.ticketId}>{ticket.id}</span>
+                        <span style={styles.ticketDate}>{ticket.created}</span>
+                      </div>
+                      <span style={styles.ticketTitle}>
+                        {ticket.title}  <span style={styles.customerName}>@{ticket.customer}</span>
+                      </span>
+                    </div>
+                  </td>
+                  <td style={styles.td}>
+                    <span style={styles.category}>{ticket.category}</span>
+                  </td>
+                  <td style={styles.td}>
+                    <span style={styles.priorityBadge(ticket.priority)}>
+                      {priorityArrow[ticket.priority]} {ticket.priority}
+                    </span>
+                  </td>
+                  <td style={styles.td}>
+                    <span style={styles.customerId}>{ticket.customerId}</span>
+                  </td>
+                  <td style={styles.td}>
+                    <span style={styles.statusBadge(ticket.status)}>
+                      <span style={styles.statusDot(ticket.status)} />
+                      {ticket.status}
+                    </span>
+                  </td>
+                  <td style={styles.td}>
+                    <span style={styles.assignee}>{ticket.assignee}</span>
+                  </td>
+                  <td style={styles.td}>
+                    <span style={styles.channel}>{ticket.channel}</span>
+                  </td>
+                  <td style={styles.td}>
+                    <span style={{ ...styles.sla, ...(isSlaWarning(ticket.sla) ? styles.slaWarning : styles.slaOk) }}>
+                      {isSlaWarning(ticket.sla) && '⚠'} SLA: {ticket.sla}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

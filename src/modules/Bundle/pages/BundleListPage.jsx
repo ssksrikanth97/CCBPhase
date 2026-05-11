@@ -3,61 +3,61 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AddIcon from '@material-ui/icons/Add';
-import { fetchProductsRequest, removeFilter, setActiveFilter, updateProductForm, createProductRequest, resetProductForm } from '../store/actions';
+import { fetchBundlesRequest, removeBundleFilter, setBundleFilter, updateBundleForm, createBundleRequest, resetBundleForm } from '../store/actions';
 import {
-  selectFilteredProducts,
-  selectProductsLoading,
-  selectActiveFilters,
-  selectProductForm,
-  selectProductCreating,
+  selectFilteredBundles,
+  selectBundlesLoading,
+  selectBundleFilters,
+  selectBundleForm,
+  selectBundleCreating,
 } from '../store/selectors';
-import ProductCard from '../components/ProductCard/ProductCard';
-import ProductListRow from '../components/ProductListRow/ProductListRow';
-import VoiceInputBar from '../components/VoiceInputBar/VoiceInputBar';
-import FilterBar from '../components/FilterBar/FilterBar';
-import ProductForm from '../components/ProductForm/ProductForm';
+import BundleCard from '../components/BundleCard/BundleCard';
+import BundleListRow from '../components/BundleListRow/BundleListRow';
+import BundleVoiceInputBar from '../components/BundleVoiceInputBar/BundleVoiceInputBar';
+import BundleFilterBar from '../components/BundleFilterBar/BundleFilterBar';
+import BundleForm from '../components/BundleForm/BundleForm';
 import ViewToggle from '../../../components/ViewToggle/ViewToggle';
 import SlidePanel from '../../../components/SlidePanel/SlidePanel';
 import { useThemeContext } from '../../../styles/ThemeContext';
 
-const ProductListPage = () => {
+const BundleListPage = () => {
   const { colors, fonts, buttonGradient } = useThemeContext();
   const dispatch = useDispatch();
   const history = useHistory();
-  const products = useSelector(selectFilteredProducts);
-  const loading = useSelector(selectProductsLoading);
-  const activeFilters = useSelector(selectActiveFilters);
-  const form = useSelector(selectProductForm);
-  const creating = useSelector(selectProductCreating);
+  const bundles = useSelector(selectFilteredBundles);
+  const loading = useSelector(selectBundlesLoading);
+  const activeFilters = useSelector(selectBundleFilters);
+  const form = useSelector(selectBundleForm);
+  const creating = useSelector(selectBundleCreating);
   const [panelOpen, setPanelOpen] = useState(false);
   const [view, setView] = useState('card');
   const [selectedItems, setSelectedItems] = useState([]);
 
   useEffect(() => {
-    document.title = 'EV Phase - Products';
-    dispatch(fetchProductsRequest());
+    document.title = 'EV Phase - Bundles';
+    dispatch(fetchBundlesRequest());
   }, [dispatch]);
 
-  const handleRemoveFilter = (filter) => dispatch(removeFilter(filter));
-  const handleAddFilter = (filter) => dispatch(setActiveFilter(filter));
-  const handleFieldChange = (field, value) => dispatch(updateProductForm(field, value));
+  const handleRemoveFilter = (filter) => dispatch(removeBundleFilter(filter));
+  const handleAddFilter = (filter) => dispatch(setBundleFilter(filter));
+  const handleFieldChange = (field, value) => dispatch(updateBundleForm(field, value));
 
-  const handleCreateProduct = () => {
-    dispatch(createProductRequest(form));
+  const handleCreateBundle = () => {
+    dispatch(createBundleRequest(form));
     setPanelOpen(false);
-    dispatch(resetProductForm());
+    dispatch(resetBundleForm());
   };
 
   const handleOpenPanel = () => {
-    dispatch(resetProductForm());
+    dispatch(resetBundleForm());
     setPanelOpen(true);
   };
 
   const toggleSelectAll = () => {
-    if (selectedItems.length === products.length) {
+    if (selectedItems.length === bundles.length) {
       setSelectedItems([]);
     } else {
-      setSelectedItems(products.map((_, i) => i));
+      setSelectedItems(bundles.map((_, i) => i));
     }
   };
 
@@ -84,7 +84,7 @@ const ProductListPage = () => {
     loadingContainer: { display: 'flex', justifyContent: 'center', padding: '60px 0' },
     emptyState: { textAlign: 'center', padding: '60px 0', color: colors.textSecondary, fontFamily: fonts.body },
     tableWrap: { overflowX: 'auto', borderRadius: 10, border: `1px solid ${colors.borderLight}`, backgroundColor: colors.bgSurface, position: 'relative' },
-    table: { width: '100%', borderCollapse: 'separate', borderSpacing: '0 0', fontFamily: fonts.body, fontSize: 'var(--text-sm)', minWidth: 1200 },
+    table: { width: '100%', borderCollapse: 'separate', borderSpacing: '0 0', fontFamily: fonts.body, fontSize: 'var(--text-sm)', minWidth: 1000 },
     th: {
       padding: '12px 12px', textAlign: 'left', fontWeight: 600,
       fontSize: 'var(--text-xs)', color: colors.textMuted,
@@ -106,12 +106,12 @@ const ProductListPage = () => {
 
   const renderContent = () => {
     if (loading) return <div style={styles.loadingContainer}><CircularProgress size={36} style={{ color: colors.accentPrimary }} /></div>;
-    if (products.length === 0) return <div style={styles.emptyState}>No products found for the selected filters</div>;
+    if (bundles.length === 0) return <div style={styles.emptyState}>No bundles found for the selected filters</div>;
 
     if (view === 'card') {
       return (
-        <div style={styles.grid} role="list" aria-label="Product list">
-          {products.map((product) => <ProductCard key={product.id} product={product} />)}
+        <div style={styles.grid} role="list" aria-label="Bundle list">
+          {bundles.map((bundle) => <BundleCard key={bundle.id} bundle={bundle} />)}
         </div>
       );
     }
@@ -122,28 +122,23 @@ const ProductListPage = () => {
           <thead>
             <tr>
               <th style={{ ...styles.thSticky, width: 36, left: 0 }}>
-                <input type="checkbox" style={styles.checkbox} checked={selectedItems.length === products.length && products.length > 0} onChange={toggleSelectAll} aria-label="Select all" />
+                <input type="checkbox" style={styles.checkbox} checked={selectedItems.length === bundles.length && bundles.length > 0} onChange={toggleSelectAll} aria-label="Select all" />
               </th>
-              <th style={{ ...styles.thSticky, left: 36, minWidth: 220, borderRight: `1px solid ${colors.borderLight}` }}>Product Name &amp; SKU</th>
-              <th style={styles.th}>Status</th>
-              <th style={styles.th}>Category</th>
-              <th style={styles.th}>Subscription</th>
-              <th style={styles.th}>Service Type</th>
+              <th style={{ ...styles.thSticky, left: 36, minWidth: 220, borderRight: `1px solid ${colors.borderLight}` }}>Bundle Name, Type &amp; Savings</th>
+              <th style={styles.th}>Discount</th>
               <th style={styles.th}>Churn ↕</th>
-              <th style={styles.th}>Subscribers ↕</th>
+              <th style={styles.th}>Subscribers</th>
               <th style={styles.th}>Growth ↕</th>
-              <th style={styles.th}>ARPU</th>
-              <th style={styles.th}>LTV</th>
-              <th style={styles.th}>Engagement</th>
-              <th style={styles.th}>Region</th>
+              <th style={styles.th}>Retention</th>
+              <th style={styles.th}>Included Products</th>
               <th style={styles.th}>Revenue ↕</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((product, index) => (
-              <ProductListRow
-                key={product.id}
-                product={product}
+            {bundles.map((bundle, index) => (
+              <BundleListRow
+                key={bundle.id}
+                bundle={bundle}
                 selected={selectedItems.includes(index)}
                 onSelect={() => toggleSelect(index)}
               />
@@ -158,34 +153,34 @@ const ProductListPage = () => {
     <div style={styles.root}>
       <div style={styles.headerRow}>
         <div style={styles.headerLeft}>
-          <h1 style={styles.heading}>Products</h1>
+          <h1 style={styles.heading}>Bundles</h1>
           <ViewToggle view={view} onViewChange={setView} />
         </div>
         <button style={styles.addBtn} onClick={handleOpenPanel}>
           <AddIcon style={{ fontSize: 18 }} />
-          Add Product
+          Add Bundle
         </button>
       </div>
       <p style={styles.subtitle}>
-        Manage your product catalogue — streaming services, subscriptions, and one-time offerings.
+        Combine products into value-packed bundles with optimized pricing and discounts.
       </p>
 
-      <VoiceInputBar />
-      <FilterBar activeFilters={activeFilters} onRemoveFilter={handleRemoveFilter} onAddFilter={handleAddFilter} />
+      <BundleVoiceInputBar />
+      <BundleFilterBar activeFilters={activeFilters} onRemoveFilter={handleRemoveFilter} onAddFilter={handleAddFilter} />
 
       {renderContent()}
 
       <SlidePanel
         open={panelOpen}
         onClose={() => setPanelOpen(false)}
-        onExpand={() => { setPanelOpen(false); history.push('/catalogue/products/create'); }}
-        title="New Product"
+        onExpand={() => { setPanelOpen(false); history.push('/catalogue/bundles/create'); }}
+        title="New Bundle"
       >
-        <ProductForm form={form} onFieldChange={handleFieldChange} compact />
+        <BundleForm form={form} onFieldChange={handleFieldChange} compact />
         <div style={styles.panelFooter}>
           <button style={styles.panelCancelBtn} onClick={() => setPanelOpen(false)}>Cancel</button>
-          <button style={styles.panelSubmitBtn} onClick={handleCreateProduct} disabled={creating}>
-            {creating ? 'Creating...' : 'Create Product'}
+          <button style={styles.panelSubmitBtn} onClick={handleCreateBundle} disabled={creating}>
+            {creating ? 'Creating...' : 'Create Bundle'}
           </button>
         </div>
       </SlidePanel>
@@ -193,4 +188,4 @@ const ProductListPage = () => {
   );
 };
 
-export default ProductListPage;
+export default BundleListPage;
