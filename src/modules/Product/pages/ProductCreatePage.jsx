@@ -24,7 +24,7 @@ const ProductCreatePage = () => {
 
   const handleSubmit = () => {
     dispatch(createProductRequest(form));
-    history.push('/products');
+    history.push('/catalogue/products');
   };
 
   const styles = {
@@ -58,7 +58,7 @@ const ProductCreatePage = () => {
       <div style={styles.header}>
         <h1 style={styles.title}>New Product</h1>
         <div style={styles.actions}>
-          <button style={styles.cancelBtn} onClick={() => history.push('/products')}>Cancel</button>
+          <button style={styles.cancelBtn} onClick={() => history.push('/catalogue/products')}>Cancel</button>
           <button style={styles.submitBtn} onClick={handleSubmit} disabled={creating}>
             {creating ? 'Creating...' : 'Create Product'}
           </button>

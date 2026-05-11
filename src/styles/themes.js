@@ -57,6 +57,12 @@ export const retroTheme = {
     lg: '0 8px 24px rgba(61, 43, 31, 0.12)',
   },
   buttonGradient: null,
+  actions: {
+    primary: { bg: '#ED790C', color: '#ffffff', hoverBg: '#BF650F' },
+    secondary: { bg: 'transparent', color: '#3d2b1f', border: '#e8ddd0', hoverBg: '#f5efe0' },
+    danger: { bg: '#ef4444', color: '#ffffff', hoverBg: '#dc2626' },
+    ghost: { bg: 'transparent', color: '#6b4c3b', border: '#e8ddd0', hoverBg: 'rgba(61,43,31,0.04)' },
+  },
 };
 
 export const trendyTheme = {
@@ -113,6 +119,12 @@ export const trendyTheme = {
     lg: '0 8px 24px rgba(37, 99, 235, 0.15)',
   },
   buttonGradient: 'linear-gradient(135deg, #22d3ee 30%, #2563eb 70%)',
+  actions: {
+    primary: { bg: 'linear-gradient(135deg, #22d3ee 30%, #2563eb 70%)', color: '#ffffff', hoverBg: '#1d4ed8' },
+    secondary: { bg: 'transparent', color: '#1e293b', border: '#dbeafe', hoverBg: '#f0f7ff' },
+    danger: { bg: '#ef4444', color: '#ffffff', hoverBg: '#dc2626' },
+    ghost: { bg: 'transparent', color: '#475569', border: '#dbeafe', hoverBg: 'rgba(37,99,235,0.04)' },
+  },
 };
 
 export const allThemes = [retroTheme, trendyTheme];

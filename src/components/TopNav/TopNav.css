@@ -1,0 +1,120 @@
+/* Desktop nav icons - visible on larger screens */
+.topnav__nav-desktop {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 16px;
+}
+
+/* Hamburger - hidden on desktop */
+.topnav__hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--color-muted-tan);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+}
+
+.topnav__hamburger:hover {
+  color: var(--text-on-dark);
+}
+
+/* Role badge */
+.topnav__role-badge {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border-dark);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Mobile menu */
+.topnav__mobile-menu {
+  display: none;
+  position: fixed;
+  top: var(--nav-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-dark);
+  z-index: 100;
+  padding: 16px;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  animation: slideDown 0.2s ease;
+}
+
+.topnav__mobile-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  color: var(--color-muted-tan);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+}
+
+.topnav__mobile-item:hover {
+  background-color: rgba(78, 205, 196, 0.1);
+  color: var(--accent-secondary);
+}
+
+.topnav__mobile-item--active {
+  background: var(--button-gradient);
+  color: var(--text-on-dark);
+}
+
+/* Breadcrumb desktop only */
+.topnav__breadcrumb--desktop {
+  display: flex;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  .topnav__nav-desktop {
+    display: none;
+  }
+
+  .topnav__breadcrumb--desktop {
+    display: none;
+  }
+
+  .topnav__hamburger {
+    display: flex;
+  }
+
+  .topnav__mobile-menu {
+    display: flex;
+  }
+
+  .topnav__role-badge {
+    font-size: 0.625rem;
+    padding: 3px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .topnav__logo-text {
+    display: none;
+  }
+}

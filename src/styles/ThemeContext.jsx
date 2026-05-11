@@ -66,6 +66,25 @@ export const ThemeContextProvider = ({ children }) => {
     // Button gradient
     root.style.setProperty('--button-gradient', activeTheme.buttonGradient || colors.accentPrimary);
 
+    // Action button variables
+    const actions = activeTheme.actions;
+    if (actions) {
+      root.style.setProperty('--action-primary-bg', actions.primary.bg);
+      root.style.setProperty('--action-primary-color', actions.primary.color);
+      root.style.setProperty('--action-primary-hover', actions.primary.hoverBg);
+      root.style.setProperty('--action-secondary-bg', actions.secondary.bg);
+      root.style.setProperty('--action-secondary-color', actions.secondary.color);
+      root.style.setProperty('--action-secondary-border', actions.secondary.border);
+      root.style.setProperty('--action-secondary-hover', actions.secondary.hoverBg);
+      root.style.setProperty('--action-danger-bg', actions.danger.bg);
+      root.style.setProperty('--action-danger-color', actions.danger.color);
+      root.style.setProperty('--action-danger-hover', actions.danger.hoverBg);
+      root.style.setProperty('--action-ghost-bg', actions.ghost.bg);
+      root.style.setProperty('--action-ghost-color', actions.ghost.color);
+      root.style.setProperty('--action-ghost-border', actions.ghost.border);
+      root.style.setProperty('--action-ghost-hover', actions.ghost.hoverBg);
+    }
+
     // Body background
     document.body.style.backgroundColor = colors.bgPrimary;
   }, [activeTheme]);
@@ -83,6 +102,7 @@ export const ThemeContextProvider = ({ children }) => {
       fonts: activeTheme.fonts,
       shadows: activeTheme.shadows,
       buttonGradient: activeTheme.buttonGradient,
+      actions: activeTheme.actions,
       setTheme,
       allThemes,
     }}>

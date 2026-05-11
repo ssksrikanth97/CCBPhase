@@ -17,7 +17,7 @@
 
   &__content {
     flex: 1;
-    padding: var(--content-padding);
+    padding: var(--space-2xl) var(--space-4xl);
     padding-bottom: calc(var(--footer-height) + var(--space-lg));
     overflow: auto;
   }

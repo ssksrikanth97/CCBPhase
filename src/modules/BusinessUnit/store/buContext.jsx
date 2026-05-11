@@ -42,22 +42,22 @@ const roles = {
   superAdmin: {
     id: 'superAdmin',
     name: 'Super Admin',
-    permissions: ['catalogue', 'products', 'bundles', 'promotions', 'customers', 'tickets', 'explore', 'configuration', 'users'],
+    permissions: ['catalogue', 'customers', 'support', 'try', 'store', 'settings', 'explore', 'dashboard'],
   },
   productAdmin: {
     id: 'productAdmin',
     name: 'Product Admin',
-    permissions: ['catalogue', 'products', 'bundles', 'promotions', 'explore'],
+    permissions: ['catalogue', 'store', 'try', 'explore', 'dashboard'],
   },
   csrAgent: {
     id: 'csrAgent',
     name: 'CSR Agent',
-    permissions: ['customers', 'tickets', 'products'],
+    permissions: ['customers', 'support', 'dashboard'],
   },
   backOfficeAdmin: {
     id: 'backOfficeAdmin',
     name: 'Back Office Admin',
-    permissions: ['catalogue', 'products', 'bundles', 'promotions', 'customers', 'tickets', 'configuration'],
+    permissions: ['catalogue', 'customers', 'support', 'settings', 'dashboard'],
   },
 };
 

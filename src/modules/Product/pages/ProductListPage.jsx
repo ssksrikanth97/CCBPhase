@@ -137,7 +137,7 @@ const ProductListPage = () => {
       <SlidePanel
         open={panelOpen}
         onClose={() => setPanelOpen(false)}
-        onExpand={() => { setPanelOpen(false); history.push('/products/create'); }}
+        onExpand={() => { setPanelOpen(false); history.push('/catalogue/products/create'); }}
         title="New Product"
       >
         <ProductForm form={form} onFieldChange={handleFieldChange} compact />
