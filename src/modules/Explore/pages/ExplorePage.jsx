@@ -304,13 +304,19 @@ const ExplorePage = () => {
 
         {/* Logout button — top right */}
         <button className="explore__logout" onClick={handleLogout}>
-          Logout ↗
+          Logout
         </button>
 
         {/* Voice button — top left */}
         <button className="explore__voice-btn" onClick={handleVoice}>
           {isSpeaking ? '■' : '🔊'}
         </button>
+
+        {/* Welcome message */}
+        <div className="explore__welcome">
+          <div className="explore__welcome-greeting">Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'}, Admin</div>
+          <div className="explore__welcome-msg">Welcome back to EVA. Your AI-powered workspace is ready.</div>
+        </div>
 
         {/* HUD overlay */}
         <div className="explore__hud">
