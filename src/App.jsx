@@ -30,7 +30,7 @@ const AppRoutes = () => {
 
       {/* Protected routes */}
       <PrivateRoute path="/dashboard" component={() => (<Layout><DashboardPage /></Layout>)} />
-      <PrivateRoute path="/explore" component={() => (<Layout><ExplorePage /></Layout>)} />
+      <PrivateRoute path="/explore" component={() => (<ExplorePage />)} />
       <PrivateRoute path="/configuration" component={() => (<Layout><ConfigurationPage /></Layout>)} />
 
       {/* Catalogue */}

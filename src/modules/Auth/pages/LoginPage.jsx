@@ -18,7 +18,7 @@ const LoginPage = () => {
     const superAdmin = MOCK_USERS.find((u) => u.role === 'superAdmin');
     login(superAdmin.email, superAdmin.password);
     switchRole('superAdmin');
-    history.push('/dashboard');
+    history.push('/explore');
   };
 
   const handleStartScan = () => {

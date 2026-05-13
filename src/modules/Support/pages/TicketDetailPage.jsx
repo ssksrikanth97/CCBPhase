@@ -331,7 +331,7 @@ const TicketDetailPage = () => {
           </div>
 
           <div style={{ borderTop: `1px solid ${colors.borderLight}`, paddingTop: 12, marginTop: 12 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px 12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 12px' }}>
               <div>
                 <label style={{ display: 'block', fontFamily: fonts.body, fontSize: '10px', fontWeight: 600, color: colors.textMuted, marginBottom: 4, textTransform: 'uppercase' }}>Customer</label>
                 <input value={ticketForm.customerName || ''} onChange={(e) => setTicketForm({ ...ticketForm, customerName: e.target.value })} style={{ width: '100%', padding: '7px 10px', borderRadius: 6, border: `1px solid ${colors.borderLight}`, fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textPrimary, backgroundColor: colors.bgPrimary, outline: 'none' }} />
@@ -340,7 +340,10 @@ const TicketDetailPage = () => {
                 <label style={{ display: 'block', fontFamily: fonts.body, fontSize: '10px', fontWeight: 600, color: colors.textMuted, marginBottom: 4, textTransform: 'uppercase' }}>Email</label>
                 <input value={ticketForm.customerEmail || ''} onChange={(e) => setTicketForm({ ...ticketForm, customerEmail: e.target.value })} style={{ width: '100%', padding: '7px 10px', borderRadius: 6, border: `1px solid ${colors.borderLight}`, fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textPrimary, backgroundColor: colors.bgPrimary, outline: 'none' }} />
               </div>
-              <div>
+              
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 12px' }}>
+            <div>
                 <label style={{ display: 'block', fontFamily: fonts.body, fontSize: '10px', fontWeight: 600, color: colors.textMuted, marginBottom: 4, textTransform: 'uppercase' }}>Phone</label>
                 <input value={ticketForm.customerPhone || ''} onChange={(e) => setTicketForm({ ...ticketForm, customerPhone: e.target.value })} style={{ width: '100%', padding: '7px 10px', borderRadius: 6, border: `1px solid ${colors.borderLight}`, fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textPrimary, backgroundColor: colors.bgPrimary, outline: 'none' }} />
               </div>

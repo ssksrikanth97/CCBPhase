@@ -86,7 +86,7 @@
 }
 
 .chat-page__sidebar {
-  width: 260px;
+  width: 400px;
   flex-shrink: 0;
   overflow-y: auto;
   display: flex;
