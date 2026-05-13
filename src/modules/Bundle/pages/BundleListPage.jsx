@@ -18,6 +18,7 @@ import BundleFilterBar from '../components/BundleFilterBar/BundleFilterBar';
 import BundleForm from '../components/BundleForm/BundleForm';
 import ViewToggle from '../../../components/ViewToggle/ViewToggle';
 import SlidePanel from '../../../components/SlidePanel/SlidePanel';
+import AIInsightsCards from '../../../components/AIInsightsCards/AIInsightsCards';
 import { useThemeContext } from '../../../styles/ThemeContext';
 
 const BundleListPage = () => {
@@ -166,6 +167,7 @@ const BundleListPage = () => {
       </p>
 
       <BundleVoiceInputBar />
+      <AIInsightsCards />
       <BundleFilterBar activeFilters={activeFilters} onRemoveFilter={handleRemoveFilter} onAddFilter={handleAddFilter} />
 
       {renderContent()}

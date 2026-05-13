@@ -5,6 +5,7 @@ import { useBU } from '../../BusinessUnit/store/buContext';
 import { rgba } from '../../../styles/utils';
 import TicketVoiceInputBar from '../components/TicketVoiceInputBar/TicketVoiceInputBar';
 import TicketFilterBar from '../components/TicketFilterBar/TicketFilterBar';
+import AIInsightsCards from '../../../components/AIInsightsCards/AIInsightsCards';
 
 const mockTickets = [
   { id: 'RVT435-10', title: 'Playback not working, stuck on black screen', status: 'In-Progress', priority: 'Critical', category: 'Trouble Ticket', domain: 'Video', business: 'OTT-POC', created: '05/03/2025', sla: '45m', assignee: 'Abishek', customer: 'Robert', customerId: '232323228383833', channel: 'Email' },
@@ -173,6 +174,7 @@ const TicketsPage = () => {
 
       {/* AI Chat Input */}
       <TicketVoiceInputBar />
+      <AIInsightsCards />
 
       {/* Filter Chips */}
       <TicketFilterBar

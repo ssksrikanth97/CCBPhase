@@ -18,6 +18,7 @@ import FilterBar from '../components/FilterBar/FilterBar';
 import ProductForm from '../components/ProductForm/ProductForm';
 import ViewToggle from '../../../components/ViewToggle/ViewToggle';
 import SlidePanel from '../../../components/SlidePanel/SlidePanel';
+import AIInsightsCards from '../../../components/AIInsightsCards/AIInsightsCards';
 import { useThemeContext } from '../../../styles/ThemeContext';
 
 const ProductListPage = () => {
@@ -171,6 +172,7 @@ const ProductListPage = () => {
       </p>
 
       <VoiceInputBar />
+      <AIInsightsCards />
       <FilterBar activeFilters={activeFilters} onRemoveFilter={handleRemoveFilter} onAddFilter={handleAddFilter} />
 
       {renderContent()}

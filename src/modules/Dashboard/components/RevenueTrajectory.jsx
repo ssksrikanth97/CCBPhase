@@ -24,9 +24,9 @@ const RevenueTrajectory = () => {
 
   const styles = {
     card: {
-      backgroundColor: colors.bgSurface, borderRadius: 16, padding: '24px',
+      backgroundColor: colors.bgSurface, borderRadius: 16, padding: '20px',
       border: `1.5px solid ${colors.borderLight}`, boxShadow: shadows.sm,
-      display: 'flex', flexDirection: 'column', height: '100%',
+      display: 'flex', flexDirection: 'column',
     },
     header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 },
     titleRow: { display: 'flex', alignItems: 'center', gap: 10 },
@@ -46,14 +46,14 @@ const RevenueTrajectory = () => {
       boxShadow: active ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
       transition: 'all 0.2s',
     }),
-    badges: { display: 'flex', gap: 8, marginBottom: 20, marginTop: 12 },
+    badges: { display: 'flex', gap: 8, marginBottom: 14, marginTop: 8 },
     badge: (color) => ({
       fontFamily: fonts.body, fontSize: 'var(--text-xs)', fontWeight: 600,
       padding: '4px 12px', borderRadius: 20,
       backgroundColor: rgba(color, 0.1), color: color,
       border: `1px solid ${rgba(color, 0.2)}`,
     }),
-    chartArea: { position: 'relative', flex: 1, minHeight: 180, marginBottom: 8 },
+    chartArea: { position: 'relative', flex: 1, minHeight: 140, marginBottom: 6 },
     yAxis: {
       position: 'absolute', left: 0, top: 0, bottom: 0, width: 32,
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
@@ -65,12 +65,12 @@ const RevenueTrajectory = () => {
       fontFamily: fonts.body, fontSize: '10px', color: colors.textMuted, marginBottom: 16,
     },
     metricsBottom: {
-      display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16,
-      paddingTop: 16, borderTop: `1px solid ${colors.borderLight}`,
+      display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12,
+      paddingTop: 12, borderTop: `1px solid ${colors.borderLight}`,
     },
     metricItem: { textAlign: 'center' },
     metricLabel: { fontFamily: fonts.body, fontSize: 'var(--text-xs)', color: colors.textMuted, marginBottom: 4 },
-    metricValue: (color) => ({ fontFamily: fonts.heading, fontSize: 'var(--text-xl)', fontWeight: 700, color }),
+    metricValue: (color) => ({ fontFamily: fonts.heading, fontSize: 'var(--text-lg)', fontWeight: 700, color }),
     metricChange: (positive) => ({
       fontFamily: fonts.body, fontSize: '10px', fontWeight: 600, marginTop: 2,
       color: positive ? colors.accentSecondaryDark : '#ef4444',

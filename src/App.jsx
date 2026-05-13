@@ -14,6 +14,8 @@ import DashboardPage from './modules/Dashboard/pages/DashboardPage';
 import ConfigurationPage from './modules/Configuration/pages/ConfigurationPage';
 import ExplorePage from './modules/Explore/pages/ExplorePage';
 import PlaceholderPage from './modules/Placeholder/PlaceholderPage';
+import CustomerListPage from './modules/Customer/pages/CustomerListPage';
+import CustomerDetailPage from './modules/Customer/pages/CustomerDetailPage';
 import ChatPage from './modules/Support/pages/ChatPage';
 import TicketsPage from './modules/Support/pages/TicketsPage';
 import TicketDetailPage from './modules/Support/pages/TicketDetailPage';
@@ -41,9 +43,10 @@ const AppRoutes = () => {
       <PrivateRoute path="/catalogue/rules" component={() => (<Layout><PlaceholderPage title="Catalogue Rules" description="Define pricing and eligibility rules" /></Layout>)} />
 
       {/* Customers */}
-      <PrivateRoute path="/customers/add" component={() => (<Layout><PlaceholderPage title="Add Customer" description="Create a new customer account" /></Layout>)} />
-      <PrivateRoute path="/customers/view" component={() => (<Layout><PlaceholderPage title="View Customers" description="Browse and manage customer accounts" /></Layout>)} />
-      <PrivateRoute path="/customers/configuration" component={() => (<Layout><PlaceholderPage title="Customer Configuration" description="Configure customer settings and segments" /></Layout>)} />
+      <PrivateRoute exact path="/customers/view" component={() => (<Layout><CustomerListPage /></Layout>)} />
+      <PrivateRoute exact path="/customers/add" component={() => (<Layout><PlaceholderPage title="Add Customer" description="Create a new customer account" /></Layout>)} />
+      <PrivateRoute exact path="/customers/configuration" component={() => (<Layout><PlaceholderPage title="Customer Configuration" description="Configure customer settings and segments" /></Layout>)} />
+      <PrivateRoute exact path="/customers/:id" component={() => (<Layout><CustomerDetailPage /></Layout>)} />
 
       {/* Support */}
       <PrivateRoute path="/support/tickets/:id" component={() => (<Layout><TicketDetailPage /></Layout>)} />

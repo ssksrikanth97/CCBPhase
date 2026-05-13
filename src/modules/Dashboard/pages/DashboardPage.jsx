@@ -33,7 +33,7 @@ const DashboardPage = () => {
     },
     mainGrid: {
       display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20, marginBottom: 28,
-      alignItems: 'stretch',
+      alignItems: 'start',
     },
     rightColumn: {
       display: 'flex', flexDirection: 'column', gap: 16,
@@ -48,16 +48,18 @@ const DashboardPage = () => {
       <MetricsRow />
 
       <div style={styles.mainGrid} className="dashboard-main-grid">
-        <RevenueTrajectory />
-        <div style={styles.rightColumn}>
-          <StrategicActions />
-          <AIInsights />
+        <div>
+          <RevenueTrajectory />
+          <div style={{ marginTop: 20 }}>
+            <h2 style={styles.sectionTitle}>Content Performance</h2>
+            <DataTable />
+          </div>
         </div>
-      </div>
-
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Content Performance</h2>
-        <DataTable />
+        <div style={styles.rightColumn}>
+          <AIInsights />
+          <StrategicActions />
+          
+        </div>
       </div>
     </div>
   );
