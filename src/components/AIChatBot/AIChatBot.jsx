@@ -150,6 +150,8 @@ const AIChatBot = () => {
     if (!expanded) setExpanded(true);
   }, [message, expanded, location.pathname, history]);
 
+  const handleKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
+
   // AI Insights data based on current route context
   const getInsights = () => {
     const path = location.pathname;
@@ -187,7 +189,7 @@ const AIChatBot = () => {
   // FAB only (chat closed)
   if (!open) {
     return (
-      <button className="chatbot-fab" onClick={() => setOpen(true)} aria-label="Open AI Assistant">
+      <button type="button" className="chatbot-fab" onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpen(true); setExpanded(true); }} aria-label="Open AI Assistant">
         <span className="chatbot-fab__icon">✦</span>
         <span className="chatbot-fab__label">EVA</span>
       </button>
@@ -200,27 +202,9 @@ const AIChatBot = () => {
         {expanded && (
           <div className="chatbot__chat-area">
             {chatHistory.length === 0 && (
-              <>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--color-muted-tan)', textAlign: 'center', padding: '8px 0' }}>
-                  AI-powered assistant — ask about products, analytics, or pricing
-                </div>
-                {/* AI Insights Panel */}
-                <div style={{ padding: '8px 0' }}>
-                  <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-muted-tan)', marginBottom: 8 }}>✦ AI Insights</div>
-                  {insights.map((insight, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', marginBottom: 4, borderRadius: 8, backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                      <span style={{ fontSize: '16px' }}>{insight.icon}</span>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-muted-tan)', fontFamily: 'var(--font-body)' }}>{insight.label}</span>
-                          <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-on-dark)', fontFamily: 'var(--font-body)' }}>{insight.value}</span>
-                        </div>
-                        <div style={{ fontSize: '10px', color: 'var(--color-muted-tan)', fontFamily: 'var(--font-body)', marginTop: 2 }}>{insight.detail}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-sm)', color: 'var(--color-muted-tan)', textAlign: 'center', padding: '8px 0' }}>
+                AI-powered assistant — ask about products, analytics, or pricing
+              </div>
             )}
             {chatHistory.map((msg, i) => (
               <div key={i} style={{

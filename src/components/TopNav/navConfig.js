@@ -38,7 +38,7 @@ export const navItems = [
   },
   {
     id: 'try',
-    label: 'Try',
+    label: 'Try Services',
     icon: 'CodeIcon',
     permission: 'try',
     children: [
@@ -61,7 +61,7 @@ export const navItems = [
   },
   {
     id: 'settings',
-    label: 'BU Settings',
+    label: 'Business Unit Settings',
     icon: 'SettingsIcon',
     permission: 'settings',
     children: [

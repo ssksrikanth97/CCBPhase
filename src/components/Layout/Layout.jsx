@@ -4,13 +4,15 @@ import AIChatBot from '../AIChatBot/AIChatBot';
 
 const Layout = ({ children }) => {
   return (
-    <div className="layout">
-      <TopNav />
-      <main className="layout__content" style={{ paddingTop: 'var(--space-2xl)' }}>
-        {children}
-      </main>
+    <>
+      <div className="layout">
+        <TopNav />
+        <main className="layout__content" style={{ paddingTop: 'var(--space-2xl)' }}>
+          {children}
+        </main>
+      </div>
       <AIChatBot />
-    </div>
+    </>
   );
 };
 

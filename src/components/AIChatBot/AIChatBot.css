@@ -14,7 +14,7 @@
   align-items: center;
   gap: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  z-index: 9999;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -41,4 +41,41 @@
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 1px;
+}
+
+/* Chatbot Footer — additional styles (base in components.scss) */
+.chatbot__chat-area {
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chatbot__suggestions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 20px;
+  overflow-x: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.chatbot__suggestion-chip {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-on-dark);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.chatbot__suggestion-chip:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
 }

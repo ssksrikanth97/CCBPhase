@@ -63,7 +63,7 @@ const TopNav = () => {
       <nav className="topnav" aria-label="Top navigation" ref={navRef}>
         <div className="topnav__left">
           {/* BU Switcher */}
-          <div className="topnav__logo" onClick={() => setClientDropdownOpen(!clientDropdownOpen)}>
+          <div className="topnav__logo" onClick={() => setClientDropdownOpen(!clientDropdownOpen)} title="Switch Business Unit">
             <div className="topnav__logo-icon" />
             <span className="topnav__logo-text">{activeBU.name}</span>
             <span className="topnav__chevron">▾</span>
@@ -132,7 +132,7 @@ const TopNav = () => {
         <div className="topnav__right">
           {/* Role badge with dropdown */}
           <div style={{ position: 'relative' }}>
-            <span className="topnav__role-badge" onClick={() => setSettingsOpen(!settingsOpen)}>
+            <span className="topnav__role-badge" onClick={() => setSettingsOpen(!settingsOpen)} title="Settings & Account">
               {currentRole.name} ▾
             </span>
             {settingsOpen && (
