@@ -15,11 +15,20 @@ const mockApi = {
     searchProducts: async (query) => {
       // TODO: Replace with GET /api/v1/catalogue/products?search={query}
       await delay(800);
-      return { success: true, data: [
+      const allProducts = [
         { id: 'PRD-001', name: 'OTT Streaming Basic', category: 'Video', price: '$9.99/mo', status: 'Active' },
         { id: 'PRD-002', name: 'Sports Live Pack', category: 'Sports', price: '$14.99/mo', status: 'Active' },
         { id: 'PRD-003', name: 'News Premium', category: 'News', price: '$7.99/mo', status: 'Active' },
-      ]};
+        { id: 'PRD-004', name: 'Entertainment Bundle', category: 'Entertainment', price: '$12.99/mo', status: 'Active' },
+        { id: 'PRD-005', name: 'Kids Zone', category: 'Entertainment', price: '$3.99/mo', status: 'Active' },
+        { id: 'PRD-006', name: 'Live Concert Pass', category: 'Audio', price: '$19.99/mo', status: 'Active' },
+      ];
+      if (query) {
+        const q = query.toLowerCase();
+        const filtered = allProducts.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+        return { success: true, data: filtered.length > 0 ? filtered : allProducts.slice(0, 3) };
+      }
+      return { success: true, data: allProducts.slice(0, 3) };
     },
     createProduct: async (data) => {
       // TODO: Replace with POST /api/v1/catalogue/products
@@ -37,10 +46,19 @@ const mockApi = {
     search: async (query) => {
       // TODO: Replace with GET /api/v1/customers?search={query}
       await delay(800);
-      return { success: true, data: [
+      const allCustomers = [
         { id: 'CUS-001', name: 'James Anderson', email: 'james@email.com', status: 'Active', segment: 'VIP' },
+        { id: 'CUS-002', name: 'Sarah Mitchell', email: 'sarah@email.com', status: 'Active', segment: 'Premium' },
+        { id: 'CUS-003', name: 'Michael Chen', email: 'michael@email.com', status: 'Active', segment: 'Standard' },
+        { id: 'CUS-004', name: 'Emma Williams', email: 'emma@email.com', status: 'Suspended', segment: 'Standard' },
         { id: 'CUS-005', name: 'Carlos Rodriguez', email: 'carlos@email.com', status: 'Active', segment: 'VIP' },
-      ]};
+      ];
+      if (query) {
+        const q = query.toLowerCase();
+        const filtered = allCustomers.filter(c => c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || c.segment.toLowerCase().includes(q));
+        return { success: true, data: filtered.length > 0 ? filtered : allCustomers.slice(0, 2) };
+      }
+      return { success: true, data: allCustomers.slice(0, 2) };
     },
     getBalance: async (customerId) => {
       // TODO: Replace with GET /api/v1/customers/{id}/balance
@@ -112,6 +130,12 @@ const moduleHandlers = {
   [INTENTS.SEARCH_PRODUCT]: async (entities) => {
     const result = await mockApi.catalogue.searchProducts(entities.name || '');
     const products = result.data;
+    if (entities.name && products.length === 1) {
+      return { speech: `Found it! ${products[0].name} is in the ${products[0].category} category, priced at ${products[0].price}, currently ${products[0].status}.`, action: 'navigate', target: '/catalogue/products', data: products };
+    }
+    if (entities.name && products.length > 1) {
+      return { speech: `I found ${products.length} products matching "${entities.name}". Top result is ${products[0].name} at ${products[0].price}.`, action: 'navigate', target: '/catalogue/products', data: products };
+    }
     return { speech: `I found ${products.length} products. The top result is ${products[0].name}, priced at ${products[0].price}, currently ${products[0].status}. Would you like to view the full list?`, action: 'navigate', target: '/catalogue/products', data: products };
   },
 
@@ -131,10 +155,16 @@ const moduleHandlers = {
   [INTENTS.SEARCH_CUSTOMER]: async (entities) => {
     const result = await mockApi.customer.search(entities.name || '');
     const customers = result.data;
-    if (customers.length > 0) {
-      return { speech: `I found ${customers.length} customers. ${customers[0].name} is a ${customers[0].segment} customer with status ${customers[0].status}. Would you like to view their profile?`, action: 'navigate', target: '/customers/view', data: customers };
+    if (entities.name && customers.length === 1) {
+      return { speech: `Found ${customers[0].name}. They are a ${customers[0].segment} customer, currently ${customers[0].status}. Email: ${customers[0].email}.`, action: 'navigate', target: '/customers/view', data: customers };
     }
-    return { speech: `I couldn't find any customers matching that criteria. Would you like me to search with different parameters?`, action: 'none' };
+    if (entities.name && customers.length > 1) {
+      return { speech: `I found ${customers.length} customers matching "${entities.name}". Top result is ${customers[0].name}, a ${customers[0].segment} customer.`, action: 'navigate', target: '/customers/view', data: customers };
+    }
+    if (customers.length > 0) {
+      return { speech: `Here are the customers I found. ${customers[0].name} is a ${customers[0].segment} customer with status ${customers[0].status}. Would you like to view their profile?`, action: 'navigate', target: '/customers/view', data: customers };
+    }
+    return { speech: `I couldn't find any customers matching that. Try a different name or say "list customers" to see all.`, action: 'none' };
   },
 
   [INTENTS.VIEW_CUSTOMER]: async (entities) => {
@@ -144,7 +174,10 @@ const moduleHandlers = {
 
   [INTENTS.CUSTOMER_BALANCE]: async (entities) => {
     const result = await mockApi.customer.getBalance(entities.id || 'CUS-001');
-    return { speech: `The customer's current balance is ${result.data.balance}, due by ${result.data.dueDate}. Status is ${result.data.status}.`, action: 'data', data: result.data };
+    return { speech: `The customer's current balance is ${result.data.balance}, due by ${result.data.dueDate}. Status is ${result.data.status}.`, action: 'navigate', target: '/customers/view', data: [
+      { name: 'Balance', status: result.data.balance, category: result.data.status },
+      { name: 'Due Date', status: result.data.dueDate },
+    ]};
   },
 
   [INTENTS.SEARCH_TICKET]: async (entities) => {
@@ -160,7 +193,11 @@ const moduleHandlers = {
 
   [INTENTS.TICKET_STATUS]: async () => {
     const stats = await mockApi.support.getStats();
-    return { speech: `There are ${stats.data.open} open tickets, ${stats.data.critical} are critical. Average resolution time is ${stats.data.avgResolution}. Customer satisfaction is at ${stats.data.csat}.`, action: 'data', data: stats.data };
+    return { speech: `There are ${stats.data.open} open tickets, ${stats.data.critical} are critical. Average resolution time is ${stats.data.avgResolution}. Customer satisfaction is at ${stats.data.csat}.`, action: 'navigate', target: '/support/tickets', data: [
+      { name: 'Open Tickets', status: stats.data.open, category: 'Critical: ' + stats.data.critical },
+      { name: 'Avg Resolution', status: stats.data.avgResolution },
+      { name: 'CSAT', status: stats.data.csat },
+    ]};
   },
 
   [INTENTS.REVENUE_REPORT]: async () => {
@@ -170,17 +207,29 @@ const moduleHandlers = {
 
   [INTENTS.CHURN_REPORT]: async () => {
     const data = await mockApi.analytics.getChurn();
-    return { speech: `Current churn rate is ${data.data.rate}, which is ${data.data.change} from last period. Status is ${data.data.status}. There are ${data.data.atRisk} customers flagged as at-risk.`, action: 'data', data: data.data };
+    return { speech: `Current churn rate is ${data.data.rate}, which is ${data.data.change} from last period. Status is ${data.data.status}. There are ${data.data.atRisk} customers flagged as at-risk.`, action: 'navigate', target: '/dashboard', data: [
+      { name: 'Churn Rate', status: data.data.rate, category: data.data.change },
+      { name: 'Status', status: data.data.status },
+      { name: 'At Risk', status: String(data.data.atRisk) + ' customers' },
+    ]};
   },
 
   [INTENTS.SUBSCRIBER_REPORT]: async () => {
     const data = await mockApi.analytics.getSubscribers();
-    return { speech: `Total subscriber base is ${data.data.total} with ${data.data.growth} growth. ${data.data.newThisMonth} new subscribers this month. VIP segment has ${data.data.vip} customers.`, action: 'data', data: data.data };
+    return { speech: `Total subscriber base is ${data.data.total} with ${data.data.growth} growth. ${data.data.newThisMonth} new subscribers this month. VIP segment has ${data.data.vip} customers.`, action: 'navigate', target: '/dashboard', data: [
+      { name: 'Total Subscribers', status: data.data.total, category: data.data.growth },
+      { name: 'New This Month', status: data.data.newThisMonth },
+      { name: 'VIP Segment', status: String(data.data.vip) },
+    ]};
   },
 
   [INTENTS.GROWTH_REPORT]: async () => {
     const data = await mockApi.analytics.getGrowth();
-    return { speech: `Overall growth is ${data.data.overall}. Top performing region is ${data.data.topRegion}. Forecast shows ${data.data.forecast}.`, action: 'data', data: data.data };
+    return { speech: `Overall growth is ${data.data.overall}. Top performing region is ${data.data.topRegion}. Forecast shows ${data.data.forecast}.`, action: 'navigate', target: '/dashboard', data: [
+      { name: 'Overall Growth', status: data.data.overall },
+      { name: 'Top Region', status: data.data.topRegion },
+      { name: 'Forecast', status: data.data.forecast },
+    ]};
   },
 
   [INTENTS.EDIT_PRODUCT]: async (entities) => {
@@ -190,7 +239,10 @@ const moduleHandlers = {
   [INTENTS.VIEW_PRODUCT]: async (entities) => {
     const result = await mockApi.catalogue.searchProducts(entities.name || '');
     const product = result.data[0];
-    return { speech: `Here are the details for ${product.name}. It's in the ${product.category} category, priced at ${product.price}, and currently ${product.status}. Would you like to view it in the catalogue?`, action: 'navigate', target: '/catalogue/products', data: product };
+    if (entities.name && result.data.length > 0) {
+      return { speech: `Here are the details for ${product.name}. Category: ${product.category}. Price: ${product.price}. Status: ${product.status}. Would you like to view it in the catalogue?`, action: 'navigate', target: '/catalogue/products', data: result.data };
+    }
+    return { speech: `I found ${result.data.length} products. The top one is ${product.name} at ${product.price}. Which product would you like to see details for?`, action: 'navigate', target: '/catalogue/products', data: result.data };
   },
 
   [INTENTS.LIST_BUNDLES]: async () => {

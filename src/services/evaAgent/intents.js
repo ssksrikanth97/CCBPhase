@@ -201,11 +201,40 @@ export const extractEntitiesFromText = (text, intent) => extractEntities(text.to
 const extractEntities = (text, intent) => {
   const entities = {};
 
-  // Extract names (after "named", "called", "for")
-  const nameMatch = text.match(/(?:named|called|for|about)\s+([a-z]+(?:\s+[a-z]+)?)/i);
-  if (nameMatch) entities.name = nameMatch[1];
+  // Remove common filler words to get the meaningful query
+  const cleaned = text
+    .replace(/\b(please|can you|could you|i want to|i need to|i'd like to|show me|tell me|give me|let me see|the|a|an|my|their|this|that)\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 
-  // Extract IDs (patterns like #XXX, RVT123, CUS-001)
+  // Extract the search term — everything after the action verb + object type
+  const searchPatterns = [
+    /(?:find|search|open|view|show|get|look up|fetch|check)\s+(?:product|customer|bundle|ticket|promotion|promo)?\s*(.+)/i,
+    /(?:product|customer|bundle|ticket|promotion|promo)\s+(?:named|called|for|details|info)?\s*(.+)/i,
+    /(?:details|info|balance|profile|status)\s+(?:of|for)\s+(.+)/i,
+  ];
+
+  for (const pattern of searchPatterns) {
+    const match = cleaned.match(pattern);
+    if (match && match[1]) {
+      const term = match[1].replace(/\b(product|customer|bundle|ticket|promotion|promo|details|info|page|list)\b/gi, '').trim();
+      if (term.length > 1) {
+        entities.name = term;
+        break;
+      }
+    }
+  }
+
+  // If still no name, try the original text with simpler extraction
+  if (!entities.name) {
+    // Get the last meaningful words (likely the name)
+    const words = cleaned.split(' ').filter(w => w.length > 2 && !['find', 'search', 'open', 'view', 'show', 'get', 'product', 'customer', 'bundle', 'ticket', 'promotion', 'promo', 'details', 'info', 'all', 'list', 'for', 'about'].includes(w));
+    if (words.length > 0) {
+      entities.name = words.join(' ');
+    }
+  }
+
+  // Extract IDs (patterns like #XXX, RVT123, CUS-001, PRD-001)
   const idMatch = text.match(/(#?\w{2,4}[-]?\d{2,6})/i);
   if (idMatch) entities.id = idMatch[1];
 
@@ -215,7 +244,6 @@ const extractEntities = (text, intent) => {
 
   // Navigation targets
   if (intent.startsWith('navigate.')) {
-    // Target is encoded in the intent itself
     entities.target = intent;
   }
 

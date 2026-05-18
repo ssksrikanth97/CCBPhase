@@ -52,7 +52,7 @@ const ExplorePage = () => {
 
         const response = await processQuery(transcript);
         setIsProcessing(false);
-        setConversationLog(prev => [...prev, { user: transcript, ai: response.speech, action: response.action, target: response.target, time: new Date().toLocaleTimeString() }]);
+        setConversationLog(prev => [...prev, { user: transcript, ai: response.speech, action: response.action, target: response.target, data: response.data, time: new Date().toLocaleTimeString() }]);
 
         // Refresh skills if they were updated
         if (response.action === 'skill_update') setSkills(skillsManager.getAll());
@@ -81,7 +81,7 @@ const ExplorePage = () => {
     setIsProcessing(true);
     const response = await processQuery(text);
     setIsProcessing(false);
-    setConversationLog(prev => [...prev, { user: text, ai: response.speech, action: response.action, target: response.target, time: new Date().toLocaleTimeString() }]);
+    setConversationLog(prev => [...prev, { user: text, ai: response.speech, action: response.action, target: response.target, data: response.data, time: new Date().toLocaleTimeString() }]);
     setStatus('speaking');
     speak(
       response.speech,
@@ -308,6 +308,17 @@ const ExplorePage = () => {
         {conversationLog.length > 0 && (
           <div className="explore__response-bubble">
             <p>{conversationLog[conversationLog.length - 1].ai}</p>
+            {/* Data results */}
+            {conversationLog[conversationLog.length - 1].data && Array.isArray(conversationLog[conversationLog.length - 1].data) && (
+              <div className="explore__response-data">
+                {conversationLog[conversationLog.length - 1].data.slice(0, 3).map((item, idx) => (
+                  <div key={idx} className="explore__response-data-item">
+                    <span className="explore__response-data-name">{item.name || item.title || item.id}</span>
+                    <span className="explore__response-data-detail">{item.price || item.status || item.email || item.segment || ''}{item.category ? ` · ${item.category}` : ''}{item.priority ? ` · ${item.priority}` : ''}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             {conversationLog[conversationLog.length - 1].target && (
               <button className="explore__response-bubble-action" onClick={() => { switchMode('hybrid'); history.push(conversationLog[conversationLog.length - 1].target); }}>
                 View in Hybrid →

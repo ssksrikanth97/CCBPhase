@@ -16,9 +16,17 @@ class SkillsManager {
   constructor() {
     const saved = localStorage.getItem('eva_skills');
     if (saved) {
-      this.enabled = JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      // If saved but empty, re-initialize with all enabled
+      if (Object.keys(parsed).length > 0) {
+        this.enabled = parsed;
+      } else {
+        this.enabled = {};
+        Object.values(SKILLS).forEach(s => { this.enabled[s.id] = true; });
+        this._persist();
+      }
     } else {
-      // Enable all skills by default on first use
+      // First use — enable all skills by default
       this.enabled = {};
       Object.values(SKILLS).forEach(s => { this.enabled[s.id] = true; });
       this._persist();
@@ -70,7 +78,15 @@ class SkillsManager {
     const module = intent.split('.')[0];
     // General, context, and navigation intents always allowed
     if (module === 'general' || module === 'context' || module === 'navigate') return true;
-    return !!this.enabled[module];
+    // Check direct match or plural match
+    if (this.enabled[module]) return true;
+    if (this.enabled[module + 's']) return true;
+    // Check singular of enabled keys
+    const enabledKeys = Object.keys(this.enabled);
+    for (const key of enabledKeys) {
+      if (key.startsWith(module) || module.startsWith(key)) return true;
+    }
+    return false;
   }
 
   _persist() {

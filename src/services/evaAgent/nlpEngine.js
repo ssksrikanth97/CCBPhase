@@ -72,10 +72,16 @@ const LABEL_TO_INTENT = {
 
 /**
  * Classify text using Hugging Face zero-shot classification
+ * NOTE: Free tier without API key is unreliable from browsers.
+ * Set AI_CONFIG.apiKey for reliable results, or use local fallback.
  * @param {string} text - User input
  * @returns {Promise<{label: string, score: number}|null>}
  */
 const classifyWithAI = async (text) => {
+  if (!AI_CONFIG.apiKey && AI_CONFIG.provider === 'huggingface') {
+    // Skip API call without key — use local NLP directly
+    return null;
+  }
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), AI_CONFIG.timeout);

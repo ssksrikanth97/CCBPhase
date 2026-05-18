@@ -433,6 +433,37 @@
     }
   }
 
+  &__response-data {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__response-data-item {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  &__response-data-name {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-on-dark);
+  }
+
+  &__response-data-detail {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: var(--text-on-dark);
+    opacity: 0.5;
+    margin-top: 2px;
+  }
+
   // HUD elements
   &__hud {
     position: absolute;
