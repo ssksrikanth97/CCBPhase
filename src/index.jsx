@@ -10,6 +10,7 @@ import theme from './theme';
 import { AuthProvider } from './modules/Auth/store/authContext';
 import { ThemeContextProvider } from './styles/ThemeContext';
 import { BUProvider } from './modules/BusinessUnit/store/buContext';
+import { ModeProvider } from './store/ModeContext';
 import './styles/global.scss';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -19,12 +20,14 @@ root.render(
       <BrowserRouter>
         <AuthProvider>
           <BUProvider>
-            <ThemeContextProvider>
-              <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <App />
-              </ThemeProvider>
-            </ThemeContextProvider>
+            <ModeProvider>
+              <ThemeContextProvider>
+                <ThemeProvider theme={theme}>
+                  <CssBaseline />
+                  <App />
+                </ThemeProvider>
+              </ThemeContextProvider>
+            </ModeProvider>
           </BUProvider>
         </AuthProvider>
       </BrowserRouter>

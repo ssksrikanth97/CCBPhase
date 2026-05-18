@@ -42,8 +42,8 @@ const FormField = ({ label, value, type, inputType = 'text', options, highlighte
   }, []);
 
   const styles = {
-    root: { display: 'flex', alignItems: 'center', gap: 12, minHeight: 36 },
-    label: { fontFamily: fonts.body, fontSize: 'var(--text-base)', color: colors.textSecondary, minWidth: 120, flexShrink: 0 },
+    root: { display: 'inline-flex', alignItems: 'center', gap: 8, minHeight: 36, marginRight: 20, marginBottom: 4, transition: 'all 0.25s ease', position: 'relative' },
+    label: { fontFamily: fonts.body, fontSize: 'var(--text-base)', color: colors.textSecondary, whiteSpace: 'nowrap' },
     dropdown: {
       display: 'inline-flex', alignItems: 'center', gap: 4,
       backgroundColor: rgba(colors.accentSecondary, 0.12), color: colors.accentSecondaryDark,
@@ -57,12 +57,12 @@ const FormField = ({ label, value, type, inputType = 'text', options, highlighte
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       width: 28, height: 28, borderRadius: 6, border: `1.5px dashed ${colors.accentPrimary}`,
       backgroundColor: rgba(colors.accentPrimary, 0.04), cursor: 'pointer', color: colors.accentPrimary,
-      transition: 'all 0.2s',
+      transition: 'all 0.25s ease', transform: 'scale(1)',
     },
     menu: {
       position: 'absolute', top: '100%', left: 0, marginTop: 4,
       backgroundColor: colors.bgSurface, borderRadius: 8, boxShadow: shadows.lg,
-      border: `1.5px solid ${colors.borderLight}`, zIndex: 100, minWidth: 160, padding: '4px 0',
+      border: `1.5px solid ${colors.borderLight}`, zIndex: 1000, minWidth: 160, padding: '4px 0',
       maxHeight: 200, overflowY: 'auto',
     },
     menuItem: {
@@ -75,7 +75,8 @@ const FormField = ({ label, value, type, inputType = 'text', options, highlighte
     },
     // Input styles for 'add' type
     inputWrap: {
-      display: 'flex', alignItems: 'center', gap: 6, position: 'relative',
+      display: 'inline-flex', alignItems: 'center', gap: 6, position: 'relative',
+      animation: 'fadeSlideIn 0.2s ease forwards',
     },
     textInput: {
       fontFamily: fonts.body, fontSize: 'var(--text-base)', fontWeight: 500,
@@ -116,7 +117,8 @@ const FormField = ({ label, value, type, inputType = 'text', options, highlighte
       color: colors.textPrimary, padding: '5px 12px', borderRadius: 6,
       backgroundColor: rgba(colors.accentPrimary, 0.06),
       border: `1px solid ${rgba(colors.accentPrimary, 0.15)}`,
-      cursor: 'pointer',
+      cursor: 'pointer', transition: 'all 0.2s ease',
+      animation: 'fadeSlideIn 0.2s ease forwards',
     },
     editIcon: { color: colors.textMuted, fontSize: 14, cursor: 'pointer' },
   };
@@ -275,6 +277,24 @@ const FormField = ({ label, value, type, inputType = 'text', options, highlighte
               style={styles.textInput}
               value={value || ''}
               placeholder={placeholder || `Enter ${label.toLowerCase()}...`}
+              onChange={(e) => onChange(e.target.value)}
+              onKeyDown={handleTextSubmit}
+              onBlur={handleTextBlur}
+            />
+          </div>
+        );
+
+      case 'currency':
+        return (
+          <div style={styles.inputWrap}>
+            <span style={{ fontFamily: fonts.body, fontSize: 'var(--text-base)', fontWeight: 600, color: colors.accentPrimary }}>$</span>
+            <input
+              ref={inputRef}
+              type="number"
+              step="0.01"
+              style={{ ...styles.textInput, minWidth: 100 }}
+              value={value || ''}
+              placeholder={placeholder || '0.00'}
               onChange={(e) => onChange(e.target.value)}
               onKeyDown={handleTextSubmit}
               onBlur={handleTextBlur}

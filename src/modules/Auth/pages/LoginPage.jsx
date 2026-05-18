@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { useThemeContext } from '../../../styles/ThemeContext';
 import { useAuth, MOCK_USERS } from '../store/authContext';
 import { useBU } from '../../BusinessUnit/store/buContext';
+import { useMode } from '../../../store/ModeContext';
 import Aurora from '../../../components/Aurora/Aurora';
 import DotField from '../../../components/DotField/DotField';
 import FaceScanner from '../../../components/FaceScanner/FaceScanner';
@@ -12,12 +13,14 @@ const LoginPage = () => {
   const { login } = useAuth();
   const { switchRole } = useBU();
   const { colors, activeTheme } = useThemeContext();
+  const { switchMode } = useMode();
   const [scannerActive, setScannerActive] = useState(false);
 
   const handleScanComplete = () => {
     const superAdmin = MOCK_USERS.find((u) => u.role === 'superAdmin');
     login(superAdmin.email, superAdmin.password);
     switchRole('superAdmin');
+    switchMode('ai');
     history.push('/explore');
   };
 

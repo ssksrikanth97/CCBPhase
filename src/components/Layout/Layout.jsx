@@ -1,6 +1,7 @@
 import React from 'react';
 import TopNav from '../TopNav/TopNav';
 import AIChatBot from '../AIChatBot/AIChatBot';
+import ModeSwitch from '../ModeSwitch/ModeSwitch';
 
 const Layout = ({ children }) => {
   return (
@@ -12,6 +13,7 @@ const Layout = ({ children }) => {
         </main>
       </div>
       <AIChatBot />
+      <ModeSwitch />
     </>
   );
 };

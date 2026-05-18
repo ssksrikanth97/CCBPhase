@@ -219,6 +219,220 @@
     letter-spacing: 0.3px;
   }
 
+  // Voice Interaction Center
+  &__voice-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__mic-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-primary);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    color: var(--text-on-dark);
+    font-size: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+
+    &:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 30px var(--accent-primary);
+      border-color: var(--text-on-dark);
+    }
+
+    &--listening {
+      border-color: #ef4444;
+      animation: mic-pulse 1.2s ease-in-out infinite;
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+    }
+
+    &--speaking {
+      border-color: var(--accent-secondary);
+      animation: mic-pulse 0.8s ease-in-out infinite;
+      box-shadow: 0 0 30px var(--accent-secondary);
+    }
+  }
+
+  &__voice-status {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--text-on-dark);
+    opacity: 0.6;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  &__voice-transcript {
+    max-width: 500px;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  &__voice-user {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: var(--accent-primary);
+    margin-bottom: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  &__voice-ai {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--text-on-dark);
+    opacity: 0.8;
+    line-height: 1.6;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  // Skills display
+  &__skills {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 700px;
+  }
+
+  &__skill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--text-on-dark);
+    opacity: 0.3;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.25s;
+
+    &--active {
+      opacity: 0.8;
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__skill-icon {
+    font-size: 13px;
+  }
+
+  &__skill-name {
+    font-size: 10px;
+    letter-spacing: 0.3px;
+  }
+
+  &__skill-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: background 0.25s;
+
+    .explore__skill--active & {
+      background: #16a34a;
+      box-shadow: 0 0 4px #16a34a;
+    }
+  }
+
+  // Response bubble
+  &__response-bubble {
+    position: absolute;
+    top: 50%;
+    right: 30px;
+    transform: translateY(-50%);
+    z-index: 8;
+    max-width: 300px;
+    padding: 14px 18px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    animation: fadeSlideIn 0.3s ease forwards;
+
+    p {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--text-on-dark);
+      line-height: 1.7;
+      margin: 0;
+      opacity: 0.85;
+    }
+  }
+
+  &__response-bubble-close {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--text-on-dark);
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+
+    &:hover { opacity: 1; }
+  }
+
+  &__response-bubble-action {
+    display: block;
+    margin-top: 10px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--accent-primary);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent-primary);
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+  }
+
   // HUD elements
   &__hud {
     position: absolute;
@@ -277,7 +491,7 @@
   // Bottom stats
   &__hud-stats {
     position: absolute;
-    bottom: 50px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -397,6 +611,11 @@
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+@keyframes mic-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
 }
 
 @keyframes float-bob {

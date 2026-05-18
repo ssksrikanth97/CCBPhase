@@ -1,142 +1,112 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useThemeContext } from '../../../styles/ThemeContext';
 import { useAuth } from '../../Auth/store/authContext';
+import { processQuery, speak, stopSpeaking, startListening, skillsManager, SKILLS } from '../../../services/evaAgent';
+import { useMode } from '../../../store/ModeContext';
+import ModeSwitch from '../../../components/ModeSwitch/ModeSwitch';
 import './ExplorePage.scss';
-
-const infoCards = [
-  { icon: '⊡', title: 'Dashboard', desc: 'Analytics & real-time metrics', path: '/dashboard' },
-  { icon: '◫', title: 'Catalogue', desc: 'Manage product catalogue', path: '/catalogue/products' },
-  { icon: '◎', title: 'Try Services', desc: 'Campaign management', path: '/try/services' },
-  { icon: '⊟', title: 'Support', desc: 'Support & issue tracking', path: '/support/tickets' },
-  { icon: '⊙', title: 'Customers', desc: 'Customer 360 view', path: '/customers/view' },
-  { icon: '◎', title: 'Online Store', desc: 'Campaign management', path: '/try/services' },
-];
-
-// Random positions scattered around the viewport (avoiding center where the sphere is)
-const getInitialPositions = () => [
-  { x: 8, y: 12 },
-  { x: 72, y: 8 },
-  { x: 3, y: 55 },
-  { x: 75, y: 50 },
-  { x: 12, y: 82 },
-  { x: 68, y: 80 },
-];
 
 const ExplorePage = () => {
   const history = useHistory();
   const { colors, activeTheme } = useThemeContext();
   const { logout } = useAuth();
+  const { switchMode } = useMode();
   const canvasRef = useRef(null);
-  const [positions, setPositions] = useState(getInitialPositions);
-  const [dragging, setDragging] = useState(null);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [status, setStatus] = useState('idle');
+  const [conversationLog, setConversationLog] = useState([]);
+  const [skills, setSkills] = useState(skillsManager.getAll());
+  const recognitionRef = useRef(null);
 
   const handleLogout = () => { logout(); history.push('/login'); };
 
-  const insightsText = 'Welcome to EVA Core. Here is your business summary. Total revenue is 127 million dollars, up 8.2 percent from last month. You have 6.8 million subscribers with 12.4 percent growth. Churn rate is at 2.4 percent, which is healthy. Customer satisfaction score is 92.7 percent. There are 24 open support tickets. Your top product is OTT Streaming Basic generating 127 million in revenue. The growth leader is Exclusive Premier with 31.2 percent subscriber growth month over month.';
+  const handleSkillToggle = (skillId) => {
+    skillsManager.toggle(skillId);
+    setSkills(skillsManager.getAll());
+  };
 
-  const handleVoice = () => {
-    if (isSpeaking) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
+  // Handle mic button — full voice pipeline
+  const handleMic = () => {
+    if (isListening) {
+      if (recognitionRef.current) recognitionRef.current.stop();
       return;
     }
-    const utterance = new SpeechSynthesisUtterance(insightsText);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.1;
-    // Try to find a female American English voice
-    const voices = window.speechSynthesis.getVoices();
-    const femaleUS = voices.find(v => v.lang.startsWith('en-US') && (v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Female') || v.name.includes('Zira')))
-      || voices.find(v => v.lang.startsWith('en-US') && v.name.includes('Google'))
-      || voices.find(v => v.lang.startsWith('en-US'))
-      || voices.find(v => v.lang.startsWith('en'));
-    if (femaleUS) utterance.voice = femaleUS;
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-    setIsSpeaking(true);
-    window.speechSynthesis.speak(utterance);
+    if (isSpeaking) {
+      stopSpeaking();
+      setIsSpeaking(false);
+      setStatus('idle');
+      return;
+    }
+
+    setStatus('listening');
+    recognitionRef.current = startListening(
+      // onResult
+      async (transcript) => {
+        setIsListening(false);
+        setStatus('processing');
+        setIsProcessing(true);
+
+        const response = await processQuery(transcript);
+        setIsProcessing(false);
+        setConversationLog(prev => [...prev, { user: transcript, ai: response.speech, action: response.action, target: response.target, time: new Date().toLocaleTimeString() }]);
+
+        // Refresh skills if they were updated
+        if (response.action === 'skill_update') setSkills(skillsManager.getAll());
+
+        // Speak the response
+        setStatus('speaking');
+        speak(
+          response.speech,
+          () => setIsSpeaking(true),
+          () => { setIsSpeaking(false); setStatus('idle'); }
+        );
+
+        // Don't auto-navigate — let user click "View" in bubble
+      },
+      // onEnd
+      () => { setIsListening(false); if (status === 'listening') setStatus('idle'); },
+      // onError
+      () => { setIsListening(false); setStatus('idle'); }
+    );
+    setIsListening(true);
+  };
+
+  // Quick command handler (fallback for typed/clicked commands)
+  const handleQuickCommand = async (text) => {
+    setStatus('processing');
+    setIsProcessing(true);
+    const response = await processQuery(text);
+    setIsProcessing(false);
+    setConversationLog(prev => [...prev, { user: text, ai: response.speech, action: response.action, target: response.target, time: new Date().toLocaleTimeString() }]);
+    setStatus('speaking');
+    speak(
+      response.speech,
+      () => setIsSpeaking(true),
+      () => { setIsSpeaking(false); setStatus('idle'); }
+    );
   };
 
   useEffect(() => {
     document.title = 'EV Phase - Explore';
-    // Auto-play voice on page load
-    const autoPlay = () => {
-      const voices = window.speechSynthesis.getVoices();
-      const utterance = new SpeechSynthesisUtterance(insightsText);
-      utterance.rate = 0.95;
-      utterance.pitch = 1.1;
-      const femaleUS = voices.find(v => v.lang.startsWith('en-US') && (v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Female') || v.name.includes('Zira')))
-        || voices.find(v => v.lang.startsWith('en-US') && v.name.includes('Google'))
-        || voices.find(v => v.lang.startsWith('en-US'))
-        || voices.find(v => v.lang.startsWith('en'));
-      if (femaleUS) utterance.voice = femaleUS;
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-      setIsSpeaking(true);
-      window.speechSynthesis.speak(utterance);
-    };
-    // Voices may load async, wait for them
-    if (window.speechSynthesis.getVoices().length > 0) {
-      autoPlay();
-    } else {
-      window.speechSynthesis.onvoiceschanged = () => autoPlay();
-    }
-    return () => { window.speechSynthesis.cancel(); };
   }, []);
 
-  // Drag handlers
-  const handleMouseDown = useCallback((i, e) => {
-    e.preventDefault();
-    const rect = containerRef.current.getBoundingClientRect();
-    setDragging(i);
-    setDragOffset({
-      x: e.clientX - (positions[i].x / 100) * rect.width,
-      y: e.clientY - (positions[i].y / 100) * rect.height,
-    });
-  }, [positions]);
-
-  const handleMouseMove = useCallback((e) => {
-    if (dragging === null) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const newX = ((e.clientX - dragOffset.x) / rect.width) * 100;
-    const newY = ((e.clientY - dragOffset.y) / rect.height) * 100;
-    setPositions((prev) => prev.map((p, i) => i === dragging ? { x: Math.max(0, Math.min(85, newX)), y: Math.max(0, Math.min(88, newY)) } : p));
-  }, [dragging, dragOffset]);
-
-  const handleMouseUp = useCallback(() => { setDragging(null); }, []);
-
-  useEffect(() => {
-    if (dragging !== null) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-      return () => { window.removeEventListener('mousemove', handleMouseMove); window.removeEventListener('mouseup', handleMouseUp); };
-    }
-  }, [dragging, handleMouseMove, handleMouseUp]);
-
-  // JARVIS-style full background animation
+  // JARVIS-style interactive animation
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let animId;
-    let w, h;
+    let animId, w, h;
 
-    // Theme-aware colors
     const isRetro = activeTheme.id === 'retro';
     const glowR = isRetro ? 237 : 0, glowG = isRetro ? 121 : 180, glowB = isRetro ? 12 : 220;
     const accentR = isRetro ? 245 : 0, accentG = isRetro ? 220 : 220, accentB = isRetro ? 180 : 255;
     const particleR = isRetro ? 220 : 120, particleG = isRetro ? 170 : 220, particleB = isRetro ? 100 : 255;
 
-    const resize = () => {
-      w = canvas.offsetWidth;
-      h = canvas.offsetHeight;
-      canvas.width = w * 2;
-      canvas.height = h * 2;
-      ctx.scale(2, 2);
-    };
+    const resize = () => { w = canvas.offsetWidth; h = canvas.offsetHeight; canvas.width = w * 2; canvas.height = h * 2; ctx.scale(2, 2); };
     resize();
 
     // Particles — sphere surface dots
@@ -166,10 +136,12 @@ const ExplorePage = () => {
       const time = Date.now() * 0.001;
       const cx = w / 2;
       const cy = h / 2;
+      const active = isListening ? 2.5 : isSpeaking ? 1.8 : 1.0;
+      const pulseSpeed = isListening ? 3 : isSpeaking ? 2 : 0.8;
 
-      // Background glow — pulsing
-      const pulseIntensity = 0.12 + Math.sin(time * 0.8) * 0.04;
-      const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 220);
+      // Background glow
+      const pulseIntensity = (0.08 + Math.sin(time * pulseSpeed) * 0.06) * active;
+      const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 220 * active);
       grd.addColorStop(0, `rgba(${glowR}, ${glowG}, ${glowB}, ${pulseIntensity})`);
       grd.addColorStop(0.4, `rgba(${glowR}, ${glowG}, ${glowB}, 0.03)`);
       grd.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -187,12 +159,12 @@ const ExplorePage = () => {
       for (let ring = 0; ring < 5; ring++) {
         ctx.save();
         ctx.translate(cx, cy);
-        ctx.rotate(time * (0.15 + ring * 0.08) + ring * 0.7);
+        ctx.rotate(time * (0.15 + ring * 0.08) * active + ring * 0.7);
         ctx.scale(1, 0.35 + ring * 0.05);
         ctx.beginPath();
         ctx.arc(0, 0, 90 + ring * 30, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${accentR}, ${accentG}, ${accentB}, ${0.12 - ring * 0.015})`;
-        ctx.lineWidth = 0.8;
+        ctx.strokeStyle = `rgba(${accentR}, ${accentG}, ${accentB}, ${(0.12 - ring * 0.015) * active})`;
+        ctx.lineWidth = 0.6 + (active - 1) * 0.4;
         ctx.setLineDash([4, 6]);
         ctx.stroke();
         ctx.setLineDash([]);
@@ -233,10 +205,10 @@ const ExplorePage = () => {
         ctx.restore();
       }
 
-      // Sphere particles — 3D projected dots
+      // Sphere particles
       particles.forEach((p) => {
-        p.theta += p.speed;
-        p.pulse += 0.02;
+        p.theta += p.speed * active;
+        p.pulse += 0.02 * active;
         const x3d = Math.sin(p.phi) * Math.cos(p.theta) * p.r;
         const y3d = Math.cos(p.phi) * p.r * 0.7;
         const z3d = Math.sin(p.phi) * Math.sin(p.theta) * p.r;
@@ -270,7 +242,7 @@ const ExplorePage = () => {
         });
       });
 
-      // Horizontal scan line
+      // Scan line
       const scanY = (time * 40) % h;
       ctx.beginPath();
       ctx.moveTo(0, scanY);
@@ -279,12 +251,37 @@ const ExplorePage = () => {
       ctx.lineWidth = 1;
       ctx.stroke();
 
+      // Listening ripples
+      if (isListening) {
+        for (let r = 0; r < 3; r++) {
+          const rippleR = 50 + ((time * 80 + r * 40) % 130);
+          ctx.beginPath();
+          ctx.arc(cx, cy, rippleR, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(239, 68, 68, ${0.3 * (1 - rippleR / 180)})`;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      }
+
+      // Speaking waveform
+      if (isSpeaking) {
+        ctx.beginPath();
+        for (let x = cx - 150; x < cx + 150; x += 2) {
+          const waveY = cy + 120 + Math.sin((x - cx) * 0.04 + time * 8) * 6 * Math.sin((x - cx) * 0.01 + time * 3);
+          x === cx - 150 ? ctx.moveTo(x, waveY) : ctx.lineTo(x, waveY);
+        }
+        ctx.strokeStyle = `rgba(${accentR}, ${accentG}, ${accentB}, 0.4)`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
       // Center core dot
+      const coreSize = (4 + Math.sin(time * pulseSpeed * 2) * 2) * (0.8 + active * 0.3);
       ctx.beginPath();
-      ctx.arc(cx, cy, 4 + Math.sin(time * 3) * 1.5, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${accentR}, ${accentG}, ${accentB}, ${0.6 + Math.sin(time * 3) * 0.3})`;
+      ctx.arc(cx, cy, coreSize, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${accentR}, ${accentG}, ${accentB}, ${0.5 + Math.sin(time * 3) * 0.3})`;
       ctx.shadowColor = `rgba(${accentR}, ${accentG}, ${accentB}, 0.8)`;
-      ctx.shadowBlur = 15;
+      ctx.shadowBlur = 15 * active;
       ctx.fill();
       ctx.shadowBlur = 0;
 
@@ -294,7 +291,7 @@ const ExplorePage = () => {
     draw();
     window.addEventListener('resize', resize);
     return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
-  }, [activeTheme.id]);
+  }, [activeTheme.id, isListening, isSpeaking]);
 
   return (
     <div className="explore">
@@ -307,31 +304,55 @@ const ExplorePage = () => {
           Logout
         </button>
 
-        {/* Voice button — top left */}
-        <button className="explore__voice-btn" onClick={handleVoice}>
-          {isSpeaking ? '■' : '🔊'}
-        </button>
+        {/* Response bubble */}
+        {conversationLog.length > 0 && (
+          <div className="explore__response-bubble">
+            <p>{conversationLog[conversationLog.length - 1].ai}</p>
+            {conversationLog[conversationLog.length - 1].target && (
+              <button className="explore__response-bubble-action" onClick={() => { switchMode('hybrid'); history.push(conversationLog[conversationLog.length - 1].target); }}>
+                View in Hybrid →
+              </button>
+            )}
+            <button className="explore__response-bubble-close" onClick={() => setConversationLog([])}>✕</button>
+          </div>
+        )}
 
         {/* Welcome message */}
         <div className="explore__welcome">
           <div className="explore__welcome-greeting">Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'}, Admin</div>
-          <div className="explore__welcome-msg">Welcome back to EVA. Your AI-powered workspace is ready.</div>
+          <div className="explore__welcome-msg">Welcome back to EVA. Tap the mic to start a conversation.</div>
         </div>
 
-        {/* HUD overlay */}
-        <div className="explore__hud">
-          <div className="explore__hud-title">E · V · A &nbsp;&nbsp; CORE &nbsp;&nbsp; v2.1</div>
-          <div className="explore__hud-status">
-            <span className="explore__hud-status-dot" />
-            
-            Loading Neural Modules...
+        {/* Voice Interaction Center */}
+        <div className="explore__voice-center">
+          {/* Mic button */}
+          <button className={`explore__mic-btn ${isListening ? 'explore__mic-btn--listening' : ''} ${isSpeaking ? 'explore__mic-btn--speaking' : ''} ${isProcessing ? 'explore__mic-btn--processing' : ''}`} onClick={handleMic}>
+            {isListening ? '⏺' : isSpeaking ? '■' : '🎙'}
+          </button>
+
+          {/* Status */}
+          <div className="explore__voice-status">
+            {status === 'listening' && 'Listening...'}
+            {status === 'processing' && 'Processing...'}
+            {status === 'speaking' && 'EVA is responding...'}
+            {status === 'idle' && 'Tap to speak'}
           </div>
-          {/* Audio visualizer bars */}
-          <div className="explore__hud-bars">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="explore__hud-bar" style={{ animationDelay: `${i * 0.08}s` }} />
-            ))}
-          </div>
+        </div>
+
+        {/* Skills connected — subtle display */}
+        <div className="explore__skills">
+          {skills.map((skill) => (
+            <button
+              key={skill.id}
+              className={`explore__skill ${skill.enabled ? 'explore__skill--active' : ''}`}
+              onClick={() => handleSkillToggle(skill.id)}
+              title={`${skill.name}: ${skill.desc}`}
+            >
+              <span className="explore__skill-icon">{skill.icon}</span>
+              <span className="explore__skill-name">{skill.name}</span>
+              <span className="explore__skill-dot" />
+            </button>
+          ))}
         </div>
 
         {/* Bottom AI Insights */}
@@ -349,20 +370,7 @@ const ExplorePage = () => {
         <div className="explore__corner explore__corner--bl" />
         <div className="explore__corner explore__corner--br" />
 
-        {/* Draggable floating info cards */}
-        {infoCards.map((card, i) => (
-          <div
-            key={i}
-            className={`explore__float-card ${dragging === i ? 'explore__float-card--dragging' : ''}`}
-            style={{ left: `${positions[i].x}%`, top: `${positions[i].y}%`, animationDelay: `${i * 0.4}s` }}
-            onMouseDown={(e) => handleMouseDown(i, e)}
-            onClick={() => { if (dragging === null) history.push(card.path); }}
-          >
-            <div className="explore__float-card-title">{card.title}</div>
-            <div className="explore__float-card-desc">{card.desc}</div>
-            <div className="explore__float-card-glow" />
-          </div>
-        ))}
+        <ModeSwitch />
       </div>
     </div>
   );
