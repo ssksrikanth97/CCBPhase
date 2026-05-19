@@ -229,49 +229,24 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
   }
 
-  &__mic-btn {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 2px solid var(--accent-primary);
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px);
-    color: var(--text-on-dark);
-    font-size: 32px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  &__avatar-canvas {
+    width: 280px;
+    height: 360px;
+    transition: filter 0.3s;
 
     &:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 30px var(--accent-primary);
-      border-color: var(--text-on-dark);
-    }
-
-    &--listening {
-      border-color: #ef4444;
-      animation: mic-pulse 1.2s ease-in-out infinite;
-      box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
-    }
-
-    &--speaking {
-      border-color: var(--accent-secondary);
-      animation: mic-pulse 0.8s ease-in-out infinite;
-      box-shadow: 0 0 30px var(--accent-secondary);
+      filter: brightness(1.2);
     }
   }
 
   &__voice-status {
     font-family: 'Courier New', monospace;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-on-dark);
-    opacity: 0.6;
+    opacity: 0.5;
     letter-spacing: 1px;
     text-transform: uppercase;
   }

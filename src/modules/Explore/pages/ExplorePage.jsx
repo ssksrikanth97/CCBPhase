@@ -5,6 +5,7 @@ import { useAuth } from '../../Auth/store/authContext';
 import { processQuery, speak, stopSpeaking, startListening, skillsManager, SKILLS } from '../../../services/evaAgent';
 import { useMode } from '../../../store/ModeContext';
 import ModeSwitch from '../../../components/ModeSwitch/ModeSwitch';
+import EvaHologram from '../../../components/EvaHologram/EvaHologram';
 import './ExplorePage.scss';
 
 const ExplorePage = () => {
@@ -331,22 +332,17 @@ const ExplorePage = () => {
         {/* Welcome message */}
         <div className="explore__welcome">
           <div className="explore__welcome-greeting">Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'}, Admin</div>
-          <div className="explore__welcome-msg">Welcome back to EVA. Tap the mic to start a conversation.</div>
+          <div className="explore__welcome-msg">Welcome back to EVA System.</div>
         </div>
 
-        {/* Voice Interaction Center */}
+        {/* Holographic AI Avatar — Three.js */}
         <div className="explore__voice-center">
-          {/* Mic button */}
-          <button className={`explore__mic-btn ${isListening ? 'explore__mic-btn--listening' : ''} ${isSpeaking ? 'explore__mic-btn--speaking' : ''} ${isProcessing ? 'explore__mic-btn--processing' : ''}`} onClick={handleMic}>
-            {isListening ? '⏺' : isSpeaking ? '■' : '🎙'}
-          </button>
-
-          {/* Status */}
+          <EvaHologram isListening={isListening} isSpeaking={isSpeaking} isProcessing={isProcessing} onClick={handleMic} />
           <div className="explore__voice-status">
             {status === 'listening' && 'Listening...'}
             {status === 'processing' && 'Processing...'}
             {status === 'speaking' && 'EVA is responding...'}
-            {status === 'idle' && 'Tap to speak'}
+            {status === 'idle' && 'Tap EVA to speak'}
           </div>
         </div>
 
