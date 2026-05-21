@@ -346,33 +346,50 @@ const moduleHandlers = {
   [INTENTS.ENABLE_SKILL]: async (entities) => {
     const { skillsManager, SKILLS } = await import('./skills');
     const text = (entities._rawText || '').toLowerCase();
+
+    // Enable all
+    if (text.includes('all')) {
+      skillsManager.enableAll();
+      return { speech: `All skills have been enabled. EVA is now fully connected to Catalogue, Customers, Support, Analytics, and Online Store.`, action: 'skill_update' };
+    }
+
+    // Match specific skill
     let skillId = null;
-    if (text.includes('catalogue') || text.includes('catalog') || text.includes('product')) skillId = 'catalogue';
-    else if (text.includes('customer')) skillId = 'customers';
-    else if (text.includes('support') || text.includes('ticket')) skillId = 'support';
-    else if (text.includes('analytics') || text.includes('analytic')) skillId = 'analytics';
-    else if (text.includes('store')) skillId = 'store';
+    let skillName = '';
+    if (text.includes('catalogue') || text.includes('catalog') || text.includes('product')) { skillId = 'catalogue'; skillName = 'Catalogue'; }
+    else if (text.includes('customer')) { skillId = 'customers'; skillName = 'Customers'; }
+    else if (text.includes('support') || text.includes('ticket')) { skillId = 'support'; skillName = 'Support'; }
+    else if (text.includes('analytics') || text.includes('analytic') || text.includes('revenue')) { skillId = 'analytics'; skillName = 'Analytics'; }
+    else if (text.includes('store') || text.includes('online')) { skillId = 'store'; skillName = 'Online Store'; }
 
     if (skillId) {
       skillsManager.enable(skillId);
-      return { speech: `${skillId} skill has been enabled. EVA can now handle ${skillId} related requests.`, action: 'skill_update' };
+      return { speech: `${skillName} skill has been enabled. EVA can now handle ${skillName} related requests.`, action: 'skill_update' };
     }
-    return { speech: `Which skill would you like to enable? Available skills are: Catalogue, Customers, Support, Analytics, and Online Store.`, action: 'none' };
+    return { speech: `Which skill would you like to enable? Say "enable catalogue", "enable customers", "enable support", "enable analytics", or "enable store". You can also say "enable all".`, action: 'none' };
   },
 
   [INTENTS.DISABLE_SKILL]: async (entities) => {
     const { skillsManager } = await import('./skills');
     const text = (entities._rawText || '').toLowerCase();
+
+    // Disable all
+    if (text.includes('all')) {
+      Object.values(SKILLS).forEach(s => skillsManager.disable(s.id));
+      return { speech: `All skills have been disabled. EVA will only respond to greetings, help, and navigation until you re-enable skills.`, action: 'skill_update' };
+    }
+
     let skillId = null;
-    if (text.includes('catalogue') || text.includes('catalog') || text.includes('product')) skillId = 'catalogue';
-    else if (text.includes('customer')) skillId = 'customers';
-    else if (text.includes('support') || text.includes('ticket')) skillId = 'support';
-    else if (text.includes('analytics') || text.includes('analytic')) skillId = 'analytics';
-    else if (text.includes('store')) skillId = 'store';
+    let skillName = '';
+    if (text.includes('catalogue') || text.includes('catalog') || text.includes('product')) { skillId = 'catalogue'; skillName = 'Catalogue'; }
+    else if (text.includes('customer')) { skillId = 'customers'; skillName = 'Customers'; }
+    else if (text.includes('support') || text.includes('ticket')) { skillId = 'support'; skillName = 'Support'; }
+    else if (text.includes('analytics') || text.includes('analytic') || text.includes('revenue')) { skillId = 'analytics'; skillName = 'Analytics'; }
+    else if (text.includes('store') || text.includes('online')) { skillId = 'store'; skillName = 'Online Store'; }
 
     if (skillId) {
       skillsManager.disable(skillId);
-      return { speech: `${skillId} skill has been disabled. EVA will no longer handle ${skillId} requests until re-enabled.`, action: 'skill_update' };
+      return { speech: `${skillName} skill has been disabled. EVA will no longer handle ${skillName} requests until re-enabled.`, action: 'skill_update' };
     }
     return { speech: `Which skill would you like to disable? Active skills are: ${skillsManager.getEnabled().map(s => s.name).join(', ')}.`, action: 'none' };
   },
@@ -394,6 +411,7 @@ const moduleHandlers = {
   },
 
   [INTENTS.GREETING]: async () => {
+    const { skillsManager } = await import('./skills');
     const alreadyGreeted = conversationContext.getSessionData('greeted');
     if (alreadyGreeted) {
       return { speech: `Hey! How can I help you?`, action: 'none' };
@@ -401,7 +419,8 @@ const moduleHandlers = {
     conversationContext.setSessionData('greeted', true);
     const hour = new Date().getHours();
     const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-    return { speech: `${greeting}! I'm EVA, your AI assistant. I'm connected to the catalogue, customer, support, and analytics modules. How can I help you today?`, action: 'none' };
+    const enabled = skillsManager.getEnabled().map(s => s.name);
+    return { speech: `${greeting}! I'm EVA, your AI assistant. I currently have ${enabled.length} skills enabled: ${enabled.join(', ')}. You can ask me to search products, find customers, check tickets, or show analytics. You can also enable or disable skills by saying "enable catalogue" or "disable support".`, action: 'none' };
   },
 
   [INTENTS.HELP]: async () => {
@@ -409,7 +428,7 @@ const moduleHandlers = {
   },
 
   [INTENTS.UNKNOWN]: async () => {
-    return { speech: `I'm not sure I understood that. I can help with catalogue management, customer search, support tickets, and analytics. Could you try rephrasing?`, action: 'none' };
+    return { speech: `I didn't quite catch that. You can ask me to find products, search customers, check tickets, show analytics, or navigate to any page. Try saying something like "show me the revenue" or "find customer James".`, action: 'none' };
   },
 };
 

@@ -43,6 +43,12 @@ const ExplorePage = () => {
       return;
     }
 
+    // First interaction — greet the user
+    if (conversationLog.length === 0) {
+      handleQuickCommand('hello');
+      return;
+    }
+
     setStatus('listening');
     recognitionRef.current = startListening(
       // onResult
@@ -55,8 +61,8 @@ const ExplorePage = () => {
         setIsProcessing(false);
         setConversationLog(prev => [...prev, { user: transcript, ai: response.speech, action: response.action, target: response.target, data: response.data, time: new Date().toLocaleTimeString() }]);
 
-        // Refresh skills if they were updated
-        if (response.action === 'skill_update') setSkills(skillsManager.getAll());
+        // Refresh skills UI
+        setSkills(skillsManager.getAll());
 
         // Speak the response
         setStatus('speaking');
@@ -83,6 +89,8 @@ const ExplorePage = () => {
     const response = await processQuery(text);
     setIsProcessing(false);
     setConversationLog(prev => [...prev, { user: text, ai: response.speech, action: response.action, target: response.target, data: response.data, time: new Date().toLocaleTimeString() }]);
+    // Always refresh skills UI
+    setSkills(skillsManager.getAll());
     setStatus('speaking');
     speak(
       response.speech,

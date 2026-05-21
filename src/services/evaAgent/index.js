@@ -27,7 +27,7 @@ export const processQuery = async (text) => {
   if (!skillsManager.canHandle(intent)) {
     const module = intent.split('.')[0];
     const { conversationContext } = await import('./context');
-    const response = { speech: `The ${module} skill is not enabled. Please enable it from the skills panel to use this feature.`, action: 'none' };
+    const response = { speech: `The ${module} skill is currently disabled. Say "enable ${module}" to activate it, or tap the skill in the panel below.`, action: 'none' };
     conversationContext.addTurn(text, intent, entities, response);
     return { ...response, intent };
   }

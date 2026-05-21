@@ -120,16 +120,14 @@ const intentPatterns = [
   { intent: INTENTS.NAV_CHAT, patterns: ['go to chat', 'open chat', 'support chat', 'live chat'] },
   { intent: INTENTS.NAV_STORE, patterns: ['go to store', 'open store', 'online store', 'store page'] },
 
-  // Contextual
-  { intent: INTENTS.CONFIRM_YES, patterns: ['yes', 'yeah', 'sure', 'okay', 'ok', 'do it', 'go ahead', 'confirm', 'please', 'yep'] },
-  { intent: INTENTS.CONFIRM_NO, patterns: ['no', 'nope', 'cancel', 'never mind', 'forget it', 'stop', 'don\'t'] },
+  // Contextual — only exact short responses (moved to end, checked last)
   { intent: INTENTS.SHOW_MORE, patterns: ['show more', 'more details', 'tell me more', 'elaborate', 'expand', 'what else'] },
   { intent: INTENTS.GO_BACK, patterns: ['go back', 'previous', 'back', 'return', 'undo'] },
 
   // Skills management
-  { intent: INTENTS.ENABLE_SKILL, patterns: ['enable skill', 'enable module', 'connect skill', 'activate skill', 'turn on skill', 'enable catalogue', 'enable customers', 'enable support', 'enable analytics', 'enable store', 'connect catalogue', 'connect customers', 'connect support', 'connect analytics'] },
-  { intent: INTENTS.DISABLE_SKILL, patterns: ['disable skill', 'disable module', 'disconnect skill', 'deactivate skill', 'turn off skill', 'disable catalogue', 'disable customers', 'disable support', 'disable analytics', 'disable store', 'disconnect catalogue', 'disconnect customers', 'disconnect support'] },
-  { intent: INTENTS.LIST_SKILLS, patterns: ['list skills', 'show skills', 'which skills', 'what skills', 'connected skills', 'active skills', 'my skills'] },
+  { intent: INTENTS.ENABLE_SKILL, patterns: ['enable skill', 'enable module', 'connect skill', 'activate skill', 'turn on skill', 'enable all', 'enable catalogue', 'enable catalog', 'enable customers', 'enable support', 'enable analytics', 'enable store', 'connect catalogue', 'connect customers', 'connect support', 'connect analytics', 'connect store', 'activate catalogue', 'activate support', 'activate analytics'] },
+  { intent: INTENTS.DISABLE_SKILL, patterns: ['disable skill', 'disable module', 'disconnect skill', 'deactivate skill', 'turn off skill', 'disable all', 'disable catalogue', 'disable catalog', 'disable customers', 'disable support', 'disable analytics', 'disable store', 'disconnect catalogue', 'disconnect customers', 'disconnect support', 'disconnect analytics', 'deactivate catalogue', 'deactivate support'] },
+  { intent: INTENTS.LIST_SKILLS, patterns: ['list skills', 'show skills', 'which skills', 'what skills', 'connected skills', 'active skills', 'my skills', 'skill status'] },
 
   // Product details
   { intent: INTENTS.VIEW_PRODUCT, patterns: ['view product', 'product details', 'show product details', 'open product', 'product info', 'details of product', 'tell me about product'] },
@@ -150,7 +148,7 @@ const intentPatterns = [
 export const recognizeIntent = (text, context = {}) => {
   const normalized = text.toLowerCase().trim();
 
-  // Handle contextual follow-ups first
+  // Handle contextual follow-ups ONLY when there's a pending action
   if (context.pending) {
     if (normalized.match(/^(yes|yeah|sure|okay|ok|do it|go ahead|confirm|please|yep)$/)) {
       return { intent: INTENTS.CONFIRM_YES, entities: {}, confidence: 0.95 };
