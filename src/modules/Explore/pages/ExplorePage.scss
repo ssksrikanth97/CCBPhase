@@ -204,19 +204,20 @@
 
   &__welcome-greeting {
     font-family: 'Courier New', monospace;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--text-on-dark);
     margin-bottom: 8px;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
   }
 
   &__welcome-msg {
     font-family: 'Courier New', monospace;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-on-dark);
-    opacity: 0.5;
-    letter-spacing: 0.3px;
+    opacity: 0.4;
+    letter-spacing: 0.5px;
   }
 
   // Voice Interaction Center
@@ -247,8 +248,9 @@
     font-size: 11px;
     color: var(--text-on-dark);
     opacity: 0.5;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 150, 255, 0.3);
   }
 
   &__voice-transcript {
@@ -527,17 +529,41 @@
     opacity: 0.4;
   }
 
-  // Corner brackets
+  // Corner brackets — premium glow
   &__corner {
     position: absolute;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     z-index: 2;
 
-    &--tl { top: 16px; left: 16px; border-top: 2px solid var(--accent-primary); border-left: 2px solid var(--accent-primary); opacity: 0.3; }
-    &--tr { top: 16px; right: 16px; border-top: 2px solid var(--accent-primary); border-right: 2px solid var(--accent-primary); opacity: 0.3; }
-    &--bl { bottom: 16px; left: 16px; border-bottom: 2px solid var(--accent-primary); border-left: 2px solid var(--accent-primary); opacity: 0.3; }
-    &--br { bottom: 16px; right: 16px; border-bottom: 2px solid var(--accent-primary); border-right: 2px solid var(--accent-primary); opacity: 0.3; }
+    &--tl {
+      top: 12px; left: 12px;
+      border-top: 2px solid var(--accent-primary);
+      border-left: 2px solid var(--accent-primary);
+      box-shadow: -4px -4px 15px var(--accent-primary), inset 2px 2px 8px rgba(0, 150, 255, 0.1);
+      opacity: 0.6;
+    }
+    &--tr {
+      top: 12px; right: 12px;
+      border-top: 2px solid var(--accent-primary);
+      border-right: 2px solid var(--accent-primary);
+      box-shadow: 4px -4px 15px var(--accent-primary), inset -2px 2px 8px rgba(0, 150, 255, 0.1);
+      opacity: 0.6;
+    }
+    &--bl {
+      bottom: 12px; left: 12px;
+      border-bottom: 2px solid var(--accent-primary);
+      border-left: 2px solid var(--accent-primary);
+      box-shadow: -4px 4px 15px var(--accent-primary), inset 2px -2px 8px rgba(0, 150, 255, 0.1);
+      opacity: 0.6;
+    }
+    &--br {
+      bottom: 12px; right: 12px;
+      border-bottom: 2px solid var(--accent-primary);
+      border-right: 2px solid var(--accent-primary);
+      box-shadow: 4px 4px 15px var(--accent-primary), inset -2px -2px 8px rgba(0, 150, 255, 0.1);
+      opacity: 0.6;
+    }
   }
 
   // Floating info cards
