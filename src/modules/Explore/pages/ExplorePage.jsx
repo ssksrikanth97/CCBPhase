@@ -4,6 +4,9 @@ import { useThemeContext } from '../../../styles/ThemeContext';
 import { useAuth } from '../../Auth/store/authContext';
 import { processQuery, speak, stopSpeaking, startListening, skillsManager, SKILLS } from '../../../services/evaAgent';
 import { useMode } from '../../../store/ModeContext';
+import { handGestureService } from '../../../services/handGesture';
+import HandGestureToggle from '../../../components/HandGestureToggle/HandGestureToggle';
+import GestureToast from '../../../components/GestureToast/GestureToast';
 import ModeSwitch from '../../../components/ModeSwitch/ModeSwitch';
 import EvaHologram from '../../../components/EvaHologram/EvaHologram';
 import './ExplorePage.scss';
@@ -110,6 +113,36 @@ const ExplorePage = () => {
 
   useEffect(() => {
     document.title = 'EV Phase - Explore';
+  }, []);
+
+  // Hand gesture navigation
+  useEffect(() => {
+    let active = true;
+
+    const handleGesture = (gesture) => {
+      if (!active) return;
+      if (gesture === 'swipe_left') {
+        const prevPage = handGestureService.getPrevPage();
+        switchMode('hybrid');
+        history.push(prevPage);
+      } else if (gesture === 'swipe_right') {
+        const page = handGestureService.getNextPage();
+        switchMode('hybrid');
+        history.push(page);
+      } else if (gesture === 'fist') {
+        switchMode('hybrid');
+        history.push('/dashboard');
+      } else if (gesture === 'pinch') {
+        handleMic();
+      }
+    };
+
+    handGestureService.addListener(handleGesture);
+
+    return () => {
+      active = false;
+      handGestureService.removeListener(handleGesture);
+    };
   }, []);
 
   // JARVIS-style interactive animation
@@ -397,6 +430,8 @@ const ExplorePage = () => {
         <div className="explore__corner explore__corner--br" />
 
         <ModeSwitch />
+        <HandGestureToggle />
+        <GestureToast />
       </div>
     </div>
   );
