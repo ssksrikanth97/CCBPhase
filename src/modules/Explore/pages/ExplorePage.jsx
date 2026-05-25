@@ -72,7 +72,11 @@ const ExplorePage = () => {
           () => { setIsSpeaking(false); setStatus('idle'); }
         );
 
-        // Don't auto-navigate — let user click "View" in bubble
+        // Only auto-navigate for explicit navigation intents (go to, open, redirect)
+        if (response.intent && response.intent.startsWith('navigate.') && response.target) {
+          switchMode('hybrid');
+          setTimeout(() => history.push(response.target), 1500);
+        }
       },
       // onEnd
       () => { setIsListening(false); if (status === 'listening') setStatus('idle'); },
@@ -97,6 +101,11 @@ const ExplorePage = () => {
       () => setIsSpeaking(true),
       () => { setIsSpeaking(false); setStatus('idle'); }
     );
+    // Only auto-navigate for explicit navigation intents (go to, open, redirect)
+    if (response.intent && response.intent.startsWith('navigate.') && response.target) {
+      switchMode('hybrid');
+      setTimeout(() => history.push(response.target), 1500);
+    }
   };
 
   useEffect(() => {
@@ -306,7 +315,10 @@ const ExplorePage = () => {
     <div className="explore">
       {/* JARVIS-style animated full background */}
       <div className="explore__canvas-area" ref={containerRef} style={{ background: activeTheme.id === 'retro' ? 'radial-gradient(ellipse at center, #2a1a0e 0%, #1a0f06 60%, #000000 100%)' : 'radial-gradient(ellipse at center, #0a1628 0%, #050d18 60%, #000000 100%)' }}>
-        <canvas ref={canvasRef} className="explore__jarvis-canvas" />
+        {/* Three.js Hologram */}
+        <EvaHologram isListening={isListening} isSpeaking={isSpeaking} isProcessing={isProcessing} onClick={handleMic} />
+        {/* Click overlay for mic */}
+        <div onClick={handleMic} style={{ position: 'absolute', inset: 0, zIndex: 5, cursor: 'pointer' }} />
 
         {/* Logout button — top right */}
         <button className="explore__logout" onClick={handleLogout}>
@@ -315,7 +327,7 @@ const ExplorePage = () => {
 
         {/* Response bubble */}
         {conversationLog.length > 0 && (
-          <div className="explore__response-bubble">
+          <div className="explore__response-bubble" onClick={(e) => e.stopPropagation()}>
             <p>{conversationLog[conversationLog.length - 1].ai}</p>
             {/* Data results */}
             {conversationLog[conversationLog.length - 1].data && Array.isArray(conversationLog[conversationLog.length - 1].data) && (
@@ -343,14 +355,13 @@ const ExplorePage = () => {
           <div className="explore__welcome-msg">Welcome back to EVA System.</div>
         </div>
 
-        {/* Holographic AI Avatar — Three.js */}
+        {/* Voice status */}
         <div className="explore__voice-center">
-          <EvaHologram isListening={isListening} isSpeaking={isSpeaking} isProcessing={isProcessing} onClick={handleMic} />
           <div className="explore__voice-status">
             {status === 'listening' && 'Listening...'}
             {status === 'processing' && 'Processing...'}
             {status === 'speaking' && 'EVA is responding...'}
-            {status === 'idle' && 'Tap EVA to speak'}
+            {status === 'idle' && 'Tap anywhere to speak'}
           </div>
         </div>
 

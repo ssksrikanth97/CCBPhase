@@ -420,7 +420,7 @@ const moduleHandlers = {
     const hour = new Date().getHours();
     const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
     const enabled = skillsManager.getEnabled().map(s => s.name);
-    return { speech: `${greeting}! I'm EVA, your AI assistant. I currently have ${enabled.length} skills enabled: ${enabled.join(', ')}. You can ask me to search products, find customers, check tickets, or show analytics. You can also enable or disable skills by saying "enable catalogue" or "disable support".`, action: 'none' };
+    return { speech: `${greeting}! I'm EVA, your AI assistant. I currently have ${enabled.length} skills enabled: ${enabled.join(', ')}. You can ask me to search products, find customers, check tickets, or show analytics. You can also enable or disable skills".`, action: 'none' };
   },
 
   [INTENTS.HELP]: async () => {

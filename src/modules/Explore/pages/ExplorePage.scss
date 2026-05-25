@@ -290,10 +290,15 @@
     transform: translateX(-50%);
     display: flex;
     gap: 6px;
-    z-index: 5;
+    z-index: 15;
     flex-wrap: wrap;
     justify-content: center;
     max-width: 700px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   &__skill {
@@ -350,10 +355,10 @@
     top: 50%;
     right: 30px;
     transform: translateY(-50%);
-    z-index: 8;
+    z-index: 20;
     max-width: 300px;
     padding: 14px 18px;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 14px;
@@ -504,7 +509,12 @@
     transform: translateX(-50%);
     display: flex;
     gap: 40px;
-    z-index: 2;
+    z-index: 15;
+    padding: 10px 24px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   &__hud-stat {
