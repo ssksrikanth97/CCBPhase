@@ -29,6 +29,7 @@ export const navItems = [
     icon: 'SupportIcon',
     permission: 'support',
     children: [
+      { label: 'Agent Workbench', path: '/support/workbench' },
       { label: 'Tickets', path: '/support/tickets' },
       { label: 'Support Chat', path: '/support/chats' },
       { label: 'Email Inbox', path: '/support/email' },

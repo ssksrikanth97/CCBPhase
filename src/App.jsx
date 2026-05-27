@@ -20,6 +20,7 @@ import ChatPage from './modules/Support/pages/ChatPage';
 import TicketsPage from './modules/Support/pages/TicketsPage';
 import TicketDetailPage from './modules/Support/pages/TicketDetailPage';
 import EmailInboxPage from './modules/Support/pages/EmailInboxPage';
+import AgentWorkbenchPage from './modules/Support/pages/AgentWorkbenchPage';
 
 const AppRoutes = () => {
   return (
@@ -49,6 +50,7 @@ const AppRoutes = () => {
       <PrivateRoute exact path="/customers/:id" component={() => (<Layout><CustomerDetailPage /></Layout>)} />
 
       {/* Support */}
+      <PrivateRoute path="/support/workbench" component={() => (<Layout><AgentWorkbenchPage /></Layout>)} />
       <PrivateRoute path="/support/tickets/:id" component={() => (<Layout><TicketDetailPage /></Layout>)} />
       <PrivateRoute path="/support/tickets" component={() => (<Layout><TicketsPage /></Layout>)} />
       <PrivateRoute path="/support/chats" component={() => (<Layout><ChatPage /></Layout>)} />
